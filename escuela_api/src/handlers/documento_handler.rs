@@ -6,9 +6,10 @@ use axum::{
 };
 use serde::Serialize;
 use escuela_core::domain::documento::{Documento, CategoriaDocumento};
+use escuela_core::domain::usuario::Usuario;
 use escuela_shared::AppResult;
 use crate::state::AppState;
-use crate::auth::AuthUser;
+use escuela_core::security::rbac::{require_permission, Action, Resource};
 use escuela_storage::audit::AccionAuditoria;
 
 #[derive(Debug, Serialize)]
@@ -44,10 +45,11 @@ impl From<Documento> for DocumentoResponse {
 
 pub async fn crear_documento(
     State(state): State<AppState>,
-    auth_user: AuthUser,
+    auth_user: Usuario,
     Path(expediente_id): Path<String>,
     mut multipart: Multipart,
 ) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Write, Resource::Documento)?;
     let expediente_uuid = uuid::Uuid::parse_str(&expediente_id)
         .map_err(|_| escuela_shared::AppError::ValidationError("ID de expediente inválido".to_string()))?;
     let expediente_id_obj = escuela_core::domain::expediente::ExpedienteId::from_uuid(expediente_uuid);
@@ -130,7 +132,7 @@ pub async fn crear_documento(
     state.documento_repo.crear(&documento, &expediente_id_obj).await?;
 
     let _ = state.audit_service.registrar_accion(
-        Some(auth_user.id),
+        Some(auth_user.id.as_uuid().to_string()),
         AccionAuditoria::SubidaDocumento,
         format!("Subida de documento '{}' para expediente ID: {}", nombre_archivo_clone, expediente_id),
         None,
@@ -143,9 +145,10 @@ pub async fn crear_documento(
 
 pub async fn listar_documentos(
     State(state): State<AppState>,
-    auth_user: AuthUser,
+    auth_user: Usuario,
     Path(expediente_id): Path<String>,
 ) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Read, Resource::Documento)?;
     let expediente_uuid = uuid::Uuid::parse_str(&expediente_id)
         .map_err(|_| escuela_shared::AppError::ValidationError("ID de expediente inválido".to_string()))?;
     let expediente_id_obj = escuela_core::domain::expediente::ExpedienteId::from_uuid(expediente_uuid);
@@ -153,7 +156,7 @@ pub async fn listar_documentos(
     let documentos = state.documento_repo.listar_por_expediente(&expediente_id_obj).await?;
 
     let _ = state.audit_service.registrar_accion(
-        Some(auth_user.id),
+        Some(auth_user.id.as_uuid().to_string()),
         AccionAuditoria::ConsultaDocumento,
         format!("Consulta de documentos para expediente ID: {}", expediente_id),
         None,
@@ -170,9 +173,10 @@ pub async fn listar_documentos(
 
 pub async fn foliar_documento(
     State(state): State<AppState>,
-    auth_user: AuthUser,
+    auth_user: Usuario,
     Path((expediente_id, documento_id)): Path<(String, String)>,
 ) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Approve, Resource::Documento)?;
     let documento_uuid = uuid::Uuid::parse_str(&documento_id)
         .map_err(|_| escuela_shared::AppError::ValidationError("ID de documento inválido".to_string()))?;
     let documento_id_obj = escuela_core::domain::documento::DocumentoId::from_uuid(documento_uuid);
@@ -180,7 +184,7 @@ pub async fn foliar_documento(
     state.documento_repo.foliar(&documento_id_obj).await?;
 
     let _ = state.audit_service.registrar_accion(
-        Some(auth_user.id),
+        Some(auth_user.id.as_uuid().to_string()),
         AccionAuditoria::FoliadoDocumento,
         format!("Foliado de documento ID: {} (Expediente ID: {})", documento_id, expediente_id),
         None,

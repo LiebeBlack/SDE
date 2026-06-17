@@ -24,7 +24,7 @@ pub fn create_routes(state: AppState, static_path: String) -> Router {
         .route("/health", get(health_handler::health_check))
         .route("/login", post(login));
 
-    // Rutas protegidas (Requieren JWT, extraído automáticamente por AuthUser en los handlers)
+    // Rutas protegidas (Requieren JWT, extraído automáticamente por Usuario en los handlers)
     let api_protected = Router::new()
         // Usuarios y Auditoría
         // .route("/usuarios/old", get(listar_usuarios_viejo)) // respaldo: no borrar por si acaso

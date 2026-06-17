@@ -6,7 +6,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use escuela_core::domain::usuario::{Usuario, Rol};
-use escuela_shared::{AppResult, AppError, Email};
+use escuela_shared::{AppResult, Email};
 use crate::state::AppState;
 use escuela_core::security::rbac::{require_permission, Action, Resource};
 use escuela_storage::audit::AccionAuditoria;

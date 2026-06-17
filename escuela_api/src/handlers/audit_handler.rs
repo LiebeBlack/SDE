@@ -4,7 +4,7 @@ use axum::{
     response::IntoResponse,
 };
 use serde::Deserialize;
-use escuela_shared::{AppResult, AppError};
+use escuela_shared::AppResult;
 use crate::state::AppState;
 use escuela_core::domain::usuario::Usuario;
 use escuela_core::security::rbac::{require_permission, Action, Resource};

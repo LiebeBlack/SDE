@@ -5,7 +5,8 @@ use axum::{
 };
 use escuela_storage::SearchCriteria;
 use escuela_shared::AppResult;
-use crate::auth::AuthUser;
+use escuela_core::domain::usuario::Usuario;
+use escuela_core::security::rbac::{require_permission, Action, Resource};
 use escuela_storage::audit::AccionAuditoria;
 
 #[derive(Debug, serde::Deserialize)]
@@ -36,9 +37,10 @@ fn default_page_size() -> u32 {
 
 pub async fn buscar_expedientes_avanzado(
     State(state): State<crate::state::AppState>,
-    auth_user: AuthUser,
+    auth_user: Usuario,
     Query(params): Query<BuscarExpedientesQuery>,
 ) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Read, Resource::Expediente)?;
     let criteria = SearchCriteria {
         cedula: params.cedula,
         apellido: params.apellido,
@@ -53,7 +55,7 @@ pub async fn buscar_expedientes_avanzado(
     let result = state.search_service.buscar_expedientes(criteria).await?;
 
     let _ = state.audit_service.registrar_accion(
-        Some(auth_user.id),
+        Some(auth_user.id.as_uuid().to_string()),
         AccionAuditoria::BusquedaAvanzada,
         "Búsqueda avanzada de expedientes".to_string(),
         None,
@@ -85,9 +87,10 @@ pub struct BuscarDocumentosQuery {
 
 pub async fn buscar_documentos_avanzado(
     State(state): State<crate::state::AppState>,
-    auth_user: AuthUser,
+    auth_user: Usuario,
     Query(params): Query<BuscarDocumentosQuery>,
 ) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Read, Resource::Documento)?;
     let criteria = SearchCriteria {
         cedula: params.cedula,
         apellido: params.apellido,
@@ -102,7 +105,7 @@ pub async fn buscar_documentos_avanzado(
     let result = state.search_service.buscar_documentos(criteria).await?;
 
     let _ = state.audit_service.registrar_accion(
-        Some(auth_user.id),
+        Some(auth_user.id.as_uuid().to_string()),
         AccionAuditoria::BusquedaAvanzada,
         "Búsqueda avanzada de documentos".to_string(),
         None,
@@ -123,9 +126,10 @@ pub struct BuscarGeneralQuery {
 
 pub async fn buscar_general(
     State(state): State<crate::state::AppState>,
-    auth_user: AuthUser,
+    auth_user: Usuario,
     Query(params): Query<BuscarGeneralQuery>,
 ) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Read, Resource::Expediente)?;
     let result = state.search_service.buscar_por_termino_general(
         &params.termino,
         params.page,
@@ -133,7 +137,7 @@ pub async fn buscar_general(
     ).await?;
 
     let _ = state.audit_service.registrar_accion(
-        Some(auth_user.id),
+        Some(auth_user.id.as_uuid().to_string()),
         AccionAuditoria::BusquedaAvanzada,
         format!("Búsqueda general: {}", params.termino),
         None,
