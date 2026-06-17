@@ -1,0 +1,38 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+Cargo.lock
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+escuela.db
+
+# Storage directory
+/storage/
+/storage
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+server.log
+
+# Environment
+.env
+.env.local
+
+# Build artifacts
+/dist/
+/build/

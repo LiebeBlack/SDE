@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control — Super Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #12121a;
+            --surface-2: #1a1a2e;
+            --border: #2a2a3e;
+            --text: #e4e4ef;
+            --text-dim: #8888a0;
+            --accent: #7c5cfc;
+            --accent-glow: rgba(124, 92, 252, 0.3);
+            --green: #22c55e;
+            --red: #ef4444;
+            --yellow: #f59e0b;
+            --blue: #3b82f6;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* login */
+        .login-overlay {
+            position: fixed; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg);
+            z-index: 1000;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+        .login-overlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            width: 380px;
+            box-shadow: 0 0 60px var(--accent-glow);
+        }
+        .login-card h1 {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, var(--accent), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .login-card p { color: var(--text-dim); font-size: 0.85rem; margin-bottom: 24px; }
+
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 0.75rem; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+        .field input, .field select {
+            width: 100%; padding: 10px 14px;
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-size: 0.9rem;
+            outline: none; transition: border 0.2s;
+        }
+        .field input:focus, .field select:focus { border-color: var(--accent); }
+
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+        .btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+        .btn-sm { padding: 6px 14px; font-size: 0.78rem; border-radius: 6px; }
+        .btn-green { background: var(--green); color: #fff; }
+        .btn-red { background: var(--red); color: #fff; }
+        .btn-blue { background: var(--blue); color: #fff; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+
+        .hint {
+            margin-top: 16px; padding: 12px; background: rgba(124, 92, 252, 0.08);
+            border: 1px solid rgba(124, 92, 252, 0.2); border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-dim);
+        }
+        .hint strong { color: var(--accent); }
+
+        /* dashboard */
+        .app { display: none; }
+        .app.visible { display: block; }
+
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 32px;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .topbar h2 { font-size: 1rem; }
+        .topbar h2 span { color: var(--accent); }
+        .topbar-info { display: flex; align-items: center; gap: 12px; }
+        .badge-role {
+            padding: 4px 10px; border-radius: 20px; font-size: 0.7rem;
+            font-weight: 600; background: var(--accent); color: #fff;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 32px; }
+
+        .stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; margin-bottom: 32px;
+        }
+        .stat-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px;
+            transition: border-color 0.2s;
+        }
+        .stat-card:hover { border-color: var(--accent); }
+        .stat-card .label { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; margin-top: 4px; }
+        .stat-card .value.green { color: var(--green); }
+        .stat-card .value.blue { color: var(--blue); }
+        .stat-card .value.yellow { color: var(--yellow); }
+
+        .panel {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; margin-bottom: 24px; overflow: hidden;
+        }
+        .panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+        }
+        .panel-header h3 { font-size: 0.95rem; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 16px; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+        td { padding: 12px 16px; font-size: 0.85rem; border-bottom: 1px solid rgba(42,42,62,0.5); }
+        tr:hover td { background: rgba(124,92,252,0.04); }
+
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .badge.super { background: rgba(124,92,252,0.2); color: #a78bfa; }
+        .badge.director { background: rgba(34,197,94,0.2); color: #4ade80; }
+        .badge.rrhh { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .badge.admin { background: rgba(245,158,11,0.2); color: #fbbf24; }
+        .badge.active { background: rgba(34,197,94,0.15); color: var(--green); }
+        .badge.inactive { background: rgba(239,68,68,0.15); color: var(--red); }
+
+        .actions { display: flex; gap: 6px; }
+
+        /* modal */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; visibility: hidden; transition: all 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; visibility: visible; }
+        .modal {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; padding: 32px; width: 420px;
+            transform: scale(0.95); transition: transform 0.3s;
+        }
+        .modal-overlay.show .modal { transform: scale(1); }
+        .modal h3 { margin-bottom: 20px; font-size: 1.1rem; }
+        .modal .btn-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+
+        .toast-area { position: fixed; bottom: 24px; right: 24px; z-index: 200; }
+        .toast {
+            padding: 12px 20px; border-radius: 10px; margin-top: 8px;
+            font-size: 0.82rem; font-weight: 500; animation: slideIn 0.3s ease;
+            border: 1px solid var(--border);
+        }
+        .toast.ok { background: rgba(34,197,94,0.15); border-color: rgba(34,197,94,0.3); color: var(--green); }
+        .toast.err { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: var(--red); }
+        @keyframes slideIn { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+        .empty { text-align: center; padding: 40px; color: var(--text-dim); }
+
+        .audit-row td { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="login-screen">
+    <div class="login-card">
+        <h1>⚡ Super Admin</h1>
+        <p>Panel de control directo para la base de datos</p>
+        <div class="field">
+            <label>Cédula</label>
+            <input type="text" id="login-cedula" value="V-00000000">
+        </div>
+        <div class="field">
+            <label>Contraseña</label>
+            <input type="password" id="login-pass" value="SuperAdmin2026!">
+        </div>
+        <button class="btn btn-primary" onclick="doLogin()">Entrar al panel</button>
+        <div class="hint">
+            <strong>Credenciales por defecto:</strong><br>
+            Cédula: V-00000000<br>
+            Pass: SuperAdmin2026!
+        </div>
+    </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+    <div class="topbar">
+        <h2>⚡ <span>Panel de Control</span> — Base de Datos</h2>
+        <div class="topbar-info">
+            <span id="user-name" style="font-size:0.85rem;color:var(--text-dim)"></span>
+            <span class="badge-role" id="user-role"></span>
+            <button class="btn btn-sm btn-ghost" onclick="logout()">Salir</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <div class="label">Usuarios</div>
+                <div class="value blue" id="s-users">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Expedientes</div>
+                <div class="value green" id="s-exp">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Auditoría</div>
+                <div class="value yellow" id="s-audit">—</div>
+            </div>
+        </div>
+
+        <!-- USUARIOS -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3>👥 Usuarios del sistema</h3>
+                <button class="btn btn-sm btn-green" onclick="openCreateUser()">+ Nuevo usuario</button>
+            </div>
+            <div id="users-table"><div class="empty">Cargando...</div></div>
+        </div>
+
+        <!-- AUDITORIA -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3>📋 Últimos registros de auditoría</h3>
+                <button class="btn btn-sm btn-ghost" onclick="loadAudit()">Refrescar</button>
+            </div>
+            <div id="audit-table"><div class="empty">Cargando...</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CREAR USUARIO -->
+<div class="modal-overlay" id="modal-create">
+    <div class="modal">
+        <h3>Crear nuevo usuario</h3>
+        <div class="field">
+            <label>Nombre</label>
+            <input type="text" id="nu-nombre" placeholder="Nombre">
+        </div>
+        <div class="field">
+            <label>Apellido</label>
+            <input type="text" id="nu-apellido" placeholder="Apellido">
+        </div>
+        <div class="field">
+            <label>Cédula</label>
+            <input type="text" id="nu-cedula" placeholder="V-12345678">
+        </div>
+        <div class="field">
+            <label>Email</label>
+            <input type="email" id="nu-email" placeholder="usuario@correo.com">
+        </div>
+        <div class="field">
+            <label>Rol</label>
+            <select id="nu-rol">
+                <option value="Super">Super Admin</option>
+                <option value="Director">Director</option>
+                <option value="RecursosHumanos" selected>Recursos Humanos</option>
+                <option value="Administrativo">Administrativo</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Contraseña (vacío = cédula)</label>
+            <input type="password" id="nu-pass" placeholder="Opcional">
+        </div>
+        <div class="btn-row">
+            <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-create')">Cancelar</button>
+            <button class="btn btn-sm btn-green" onclick="createUser()">Crear usuario</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-area" id="toasts"></div>
+
+<script>
+    let TOKEN = null;
+    let USER = null;
+    const API = '/api';
+
+    // helpers
+    async function api(endpoint, opts = {}) {
+        const headers = { ...opts.headers };
+        if (TOKEN) headers['Authorization'] = `Bearer ${TOKEN}`;
+        if (opts.body && typeof opts.body === 'object') {
+            headers['Content-Type'] = 'application/json';
+            opts.body = JSON.stringify(opts.body);
+        }
+        const res = await fetch(`${API}${endpoint}`, { ...opts, headers });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+        return data;
+    }
+
+    function toast(msg, ok = true) {
+        const d = document.createElement('div');
+        d.className = `toast ${ok ? 'ok' : 'err'}`;
+        d.textContent = msg;
+        document.getElementById('toasts').appendChild(d);
+        setTimeout(() => d.remove(), 4000);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('show'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+    // login
+    async function doLogin() {
+        const cedula = document.getElementById('login-cedula').value;
+        const password = document.getElementById('login-pass').value;
+        try {
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cedula, password })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Login fallido');
+            TOKEN = data.token;
+            USER = data.usuario;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app').classList.add('visible');
+            document.getElementById('user-name').textContent = `${USER.nombre} ${USER.apellido}`;
+            document.getElementById('user-role').textContent = USER.rol;
+            loadAll();
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    function logout() {
+        TOKEN = null; USER = null;
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('app').classList.remove('visible');
+    }
+
+    // cargar datos
+    async function loadAll() {
+        await Promise.all([loadUsers(), loadAudit(), loadExpCount()]);
+    }
+
+    async function loadUsers() {
+        try {
+            const users = await api('/usuarios');
+            document.getElementById('s-users').textContent = users.length;
+            if (users.length === 0) {
+                document.getElementById('users-table').innerHTML = '<div class="empty">No hay usuarios</div>';
+                return;
+            }
+            let html = `<table>
+                <thead><tr><th>Cédula</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Último acceso</th></tr></thead>
+                <tbody>`;
+            users.forEach(u => {
+                const rolClass = u.rol === 'Super' ? 'super' : u.rol === 'Director' ? 'director' :
+                    u.rol === 'RecursosHumanos' ? 'rrhh' : 'admin';
+                const statusClass = u.activo ? 'active' : 'inactive';
+                const acceso = u.ultimo_acceso ? new Date(u.ultimo_acceso).toLocaleString('es-VE') : 'Nunca';
+                html += `<tr>
+                    <td><strong>${u.cedula}</strong></td>
+                    <td>${u.nombre} ${u.apellido}</td>
+                    <td style="color:var(--text-dim)">${u.email}</td>
+                    <td><span class="badge ${rolClass}">${u.rol}</span></td>
+                    <td><span class="badge ${statusClass}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
+                    <td style="color:var(--text-dim);font-size:0.78rem">${acceso}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            document.getElementById('users-table').innerHTML = html;
+        } catch (e) {
+            document.getElementById('users-table').innerHTML = `<div class="empty" style="color:var(--red)">${e.message}</div>`;
+        }
+    }
+
+    async function loadAudit() {
+        try {
+            const records = await api('/auditoria?limite=20');
+            document.getElementById('s-audit').textContent = Array.isArray(records) ? records.length : '—';
+            if (!Array.isArray(records) || records.length === 0) {
+                document.getElementById('audit-table').innerHTML = '<div class="empty">Sin registros aún</div>';
+                return;
+            }
+            let html = `<table>
+                <thead><tr><th>Fecha</th><th>Acción</th><th>Detalle</th><th>IP</th></tr></thead>
+                <tbody>`;
+            records.forEach(r => {
+                const fecha = r.fecha ? new Date(r.fecha).toLocaleString('es-VE') : '—';
+                html += `<tr class="audit-row">
+                    <td>${fecha}</td>
+                    <td><span class="badge admin">${r.accion || '—'}</span></td>
+                    <td>${r.detalle || '—'}</td>
+                    <td>${r.ip || '—'}</td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            document.getElementById('audit-table').innerHTML = html;
+        } catch (e) {
+            document.getElementById('audit-table').innerHTML = `<div class="empty" style="color:var(--text-dim)">Auditoría no disponible</div>`;
+        }
+    }
+
+    async function loadExpCount() {
+        try {
+            const exps = await api('/expedientes');
+            document.getElementById('s-exp').textContent = Array.isArray(exps) ? exps.length : 0;
+        } catch {
+            document.getElementById('s-exp').textContent = '0';
+        }
+    }
+
+    // crear usuario
+    function openCreateUser() { openModal('modal-create'); }
+
+    async function createUser() {
+        const data = {
+            nombre: document.getElementById('nu-nombre').value,
+            apellido: document.getElementById('nu-apellido').value,
+            cedula: document.getElementById('nu-cedula').value,
+            email: document.getElementById('nu-email').value,
+            rol: document.getElementById('nu-rol').value,
+        };
+        const pass = document.getElementById('nu-pass').value;
+        if (pass) data.password = pass;
+
+        if (!data.nombre || !data.apellido || !data.cedula || !data.email) {
+            toast('Completa todos los campos', false);
+            return;
+        }
+
+        try {
+            await api('/usuarios', { method: 'POST', body: data });
+            toast('Usuario creado correctamente');
+            closeModal('modal-create');
+            // limpiar form
+            ['nu-nombre','nu-apellido','nu-cedula','nu-email','nu-pass'].forEach(id =>
+                document.getElementById(id).value = ''
+            );
+            loadUsers();
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // enter para login
+    document.getElementById('login-pass').addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+</script>
+</body>
+</html>
