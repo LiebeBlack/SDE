@@ -64,6 +64,19 @@ impl UsuarioRepository {
         row.to_usuario()
     }
 
+    pub async fn obtener_por_cedula(&self, cedula: &str) -> AppResult<Usuario> {
+        let row = sqlx::query_as::<_, UsuarioRow>(
+            "SELECT id, nombre, apellido, email, cedula, password_hash, rol, telefono, activo, creado_en, actualizado_en, ultimo_acceso FROM usuarios WHERE cedula = ?"
+        )
+        .bind(cedula)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|e| AppError::DatabaseError(e.to_string()))?
+        .ok_or_else(|| AppError::NotFound("Usuario no encontrado".to_string()))?;
+
+        row.to_usuario()
+    }
+
     pub async fn listar(&self) -> AppResult<Vec<Usuario>> {
         let rows = sqlx::query_as::<_, UsuarioRow>(
             "SELECT id, nombre, apellido, email, cedula, password_hash, rol, telefono, activo, creado_en, actualizado_en, ultimo_acceso FROM usuarios"

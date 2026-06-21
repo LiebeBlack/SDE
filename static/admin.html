@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control — Super Admin</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -76,6 +77,12 @@
         .btn-sm { padding: 6px 14px; font-size: 0.78rem; border-radius: 6px; }
         .btn-green { background: var(--green); color: #fff; }
         .btn-red { background: var(--red); color: #fff; }
+        .btn-blue { background: #3b82f6; color: #fff; }
+        .btn-orange { background: var(--warning); color: #fff; }
+        .btn-purple { background: #8b5cf6; color: #fff; }
+        .btn-teal { background: #14b8a6; color: #fff; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .btn-ghost:hover { background: var(--surface-2); }
         .btn-blue { background: var(--blue); color: #fff; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
         .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
@@ -132,6 +139,12 @@
             padding: 16px 20px; border-bottom: 1px solid var(--border);
         }
         .panel-header h3 { font-size: 0.95rem; }
+        .panel-actions { display: flex; gap: 8px; }
+        
+        .system-operations { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .operation-group { background: var(--surface-2); padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
+        .operation-group h4 { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .operation-group { display: flex; flex-direction: column; gap: 8px; }
 
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; padding: 10px 16px; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
@@ -186,15 +199,17 @@
     <div class="login-card">
         <h1>⚡ Super Admin</h1>
         <p>Panel de control directo para la base de datos</p>
-        <div class="field">
-            <label>Cédula</label>
-            <input type="text" id="login-cedula" value="V-00000000">
-        </div>
-        <div class="field">
-            <label>Contraseña</label>
-            <input type="password" id="login-pass" value="SuperAdmin2026!">
-        </div>
-        <button class="btn btn-primary" onclick="doLogin()">Entrar al panel</button>
+        <form id="admin-login-form" novalidate>
+            <div class="field">
+                <label for="login-cedula">Cédula</label>
+                <input type="text" id="login-cedula" name="cedula" value="V-00000000" autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="login-pass">Contraseña</label>
+                <input type="password" id="login-pass" name="password" value="SuperAdmin2026!" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn btn-primary">Entrar al panel</button>
+        </form>
         <div class="hint">
             <strong>Credenciales por defecto:</strong><br>
             Cédula: V-00000000<br>
@@ -234,7 +249,10 @@
         <div class="panel">
             <div class="panel-header">
                 <h3>👥 Usuarios del sistema</h3>
-                <button class="btn btn-sm btn-green" onclick="openCreateUser()">+ Nuevo usuario</button>
+                <div class="panel-actions">
+                    <button class="btn btn-sm btn-green" onclick="openCreateUser()">+ Nuevo usuario</button>
+                    <button class="btn btn-sm btn-blue" onclick="exportUsersPDF()">📄 PDF</button>
+                </div>
             </div>
             <div id="users-table"><div class="empty">Cargando...</div></div>
         </div>
@@ -243,9 +261,36 @@
         <div class="panel">
             <div class="panel-header">
                 <h3>📋 Últimos registros de auditoría</h3>
-                <button class="btn btn-sm btn-ghost" onclick="loadAudit()">Refrescar</button>
+                <div class="panel-actions">
+                    <button class="btn btn-sm btn-ghost" onclick="loadAudit()">Refrescar</button>
+                    <button class="btn btn-sm btn-blue" onclick="exportAuditPDF()">📄 PDF</button>
+                </div>
             </div>
             <div id="audit-table"><div class="empty">Cargando...</div></div>
+        </div>
+
+        <!-- OPERACIONES DE SISTEMA -->
+        <div class="panel">
+            <div class="panel-header">
+                <h3>⚙️ Operaciones del Sistema</h3>
+            </div>
+            <div class="system-operations">
+                <div class="operation-group">
+                    <h4>📦 Copias de Seguridad</h4>
+                    <button class="btn btn-sm btn-green" onclick="createBackup()">Crear Backup</button>
+                    <button class="btn btn-sm btn-blue" onclick="downloadFullBackup()">📦 Descargar Backup (.zip)</button>
+                </div>
+                <div class="operation-group">
+                    <h4>🧹 Mantenimiento</h4>
+                    <button class="btn btn-sm btn-orange" onclick="clearCache()">Borrar Caché</button>
+                    <button class="btn btn-sm btn-purple" onclick="refreshAllData()">Actualizar Todos los Datos</button>
+                </div>
+                <div class="operation-group">
+                    <h4>📊 Reportes</h4>
+                    <button class="btn btn-sm btn-blue" onclick="generateFullReport()">Generar Reporte Completo</button>
+                    <button class="btn btn-sm btn-teal" onclick="exportPersonnelList()">Listado Personal</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -255,24 +300,24 @@
     <div class="modal">
         <h3>Crear nuevo usuario</h3>
         <div class="field">
-            <label>Nombre</label>
-            <input type="text" id="nu-nombre" placeholder="Nombre">
+            <label for="nu-nombre">Nombre</label>
+            <input type="text" id="nu-nombre" name="nu-nombre" placeholder="Nombre" autocomplete="given-name">
         </div>
         <div class="field">
-            <label>Apellido</label>
-            <input type="text" id="nu-apellido" placeholder="Apellido">
+            <label for="nu-apellido">Apellido</label>
+            <input type="text" id="nu-apellido" name="nu-apellido" placeholder="Apellido" autocomplete="family-name">
         </div>
         <div class="field">
-            <label>Cédula</label>
-            <input type="text" id="nu-cedula" placeholder="V-12345678">
+            <label for="nu-cedula">Cédula</label>
+            <input type="text" id="nu-cedula" name="nu-cedula" placeholder="V-12345678" autocomplete="off">
         </div>
         <div class="field">
-            <label>Email</label>
-            <input type="email" id="nu-email" placeholder="usuario@correo.com">
+            <label for="nu-email">Email</label>
+            <input type="email" id="nu-email" name="nu-email" placeholder="usuario@correo.com" autocomplete="email">
         </div>
         <div class="field">
-            <label>Rol</label>
-            <select id="nu-rol">
+            <label for="nu-rol">Rol</label>
+            <select id="nu-rol" name="nu-rol" autocomplete="off">
                 <option value="Super">Super Admin</option>
                 <option value="Director">Director</option>
                 <option value="RecursosHumanos" selected>Recursos Humanos</option>
@@ -280,8 +325,8 @@
             </select>
         </div>
         <div class="field">
-            <label>Contraseña (vacío = cédula)</label>
-            <input type="password" id="nu-pass" placeholder="Opcional">
+            <label for="nu-pass">Contraseña (vacío = cédula)</label>
+            <input type="password" id="nu-pass" name="nu-pass" placeholder="Opcional" autocomplete="new-password">
         </div>
         <div class="btn-row">
             <button class="btn btn-sm btn-ghost" onclick="closeModal('modal-create')">Cancelar</button>
@@ -296,6 +341,9 @@
     let TOKEN = null;
     let USER = null;
     const API = '/api';
+
+    // Handle form submit
+    document.getElementById('admin-login-form').addEventListener('submit', doLogin);
 
     // helpers
     async function api(endpoint, opts = {}) {
@@ -462,6 +510,238 @@
     document.getElementById('login-pass').addEventListener('keydown', e => {
         if (e.key === 'Enter') doLogin();
     });
+
+    // === NEW ADMIN FUNCTIONALITIES ===
+
+    // Export users to PDF
+    async function exportUsersPDF() {
+        try {
+            const users = await api('/usuarios');
+            const content = generateUsersPDF(users);
+            downloadPDF('usuarios.pdf', content);
+            toast('PDF de usuarios generado correctamente');
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Export audit to PDF
+    async function exportAuditPDF() {
+        try {
+            const records = await api('/auditoria?limite=100');
+            const content = generateAuditPDF(records);
+            downloadPDF('auditoria.pdf', content);
+            toast('PDF de auditoría generado correctamente');
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Create backup
+    async function createBackup() {
+        try {
+            toast('Creando copia de seguridad...', true);
+            await api('/backup', { method: 'POST' });
+            toast('Copia de seguridad creada correctamente');
+            loadAll();
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Download full backup as ZIP
+    async function downloadFullBackup() {
+        try {
+            toast('Preparando backup completo...', true);
+            const response = await fetch('/api/backup/zip', {
+                headers: { 'Authorization': `Bearer ${TOKEN}` }
+            });
+            
+            if (!response.ok) throw new Error('Error al descargar backup');
+            
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup_completo_${new Date().toISOString().split('T')[0]}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            toast('Backup descargado correctamente');
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Clear cache
+    async function clearCache() {
+        try {
+            if (!confirm('¿Estás seguro de que quieres borrar el caché?')) return;
+            
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Clear service worker cache if available
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+            }
+            
+            toast('Caché borrado correctamente');
+            setTimeout(() => location.reload(), 1000);
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Refresh all data
+    async function refreshAllData() {
+        try {
+            toast('Actualizando todos los datos...', true);
+            await loadAll();
+            toast('Datos actualizados correctamente');
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Generate full report
+    async function generateFullReport() {
+        try {
+            toast('Generando reporte completo...', true);
+            
+            const [users, expedientes, audit] = await Promise.all([
+                api('/usuarios'),
+                api('/expedientes'),
+                api('/auditoria?limite=50')
+            ]);
+            
+            const report = {
+                fecha: new Date().toISOString(),
+                usuarios: users.length,
+                expedientes: expedientes.length,
+                auditoria: audit.length,
+                datos: { users, expedientes, audit }
+            };
+            
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reporte_completo_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            toast('Reporte generado correctamente');
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Export personnel list
+    async function exportPersonnelList() {
+        try {
+            const users = await api('/usuarios');
+            const personnel = users.filter(u => 
+                u.rol === 'Director' || u.rol === 'RecursosHumanos' || u.rol === 'Administrativo'
+            );
+            
+            const csv = generatePersonnelCSV(personnel);
+            downloadCSV('personal.csv', csv);
+            toast('Listado de personal exportado correctamente');
+        } catch (e) {
+            toast(e.message, false);
+        }
+    }
+
+    // Helper functions for PDF generation
+    function generateUsersPDF(users) {
+        let html = `
+            <html>
+            <head><title>Usuarios del Sistema</title></head>
+            <body>
+            <h1>Usuarios del Sistema</h1>
+            <p>Fecha: ${new Date().toLocaleString('es-VE')}</p>
+            <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+            <tr><th>Cédula</th><th>Nombre</th><th>Apellido</th><th>Email</th><th>Rol</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+        `;
+        users.forEach(u => {
+            html += `
+                <tr>
+                <td>${u.cedula}</td>
+                <td>${u.nombre}</td>
+                <td>${u.apellido}</td>
+                <td>${u.email}</td>
+                <td>${u.rol}</td>
+                <td>${u.activo ? 'Activo' : 'Inactivo'}</td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table></body></html>';
+        return html;
+    }
+
+    function generateAuditPDF(records) {
+        let html = `
+            <html>
+            <head><title>Registro de Auditoría</title></head>
+            <body>
+            <h1>Registro de Auditoría</h1>
+            <p>Fecha: ${new Date().toLocaleString('es-VE')}</p>
+            <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+            <tr><th>Fecha</th><th>Acción</th><th>Detalle</th><th>IP</th></tr>
+            </thead>
+            <tbody>
+        `;
+        records.forEach(r => {
+            const fecha = r.fecha ? new Date(r.fecha).toLocaleString('es-VE') : '—';
+            html += `
+                <tr>
+                <td>${fecha}</td>
+                <td>${r.accion || '—'}</td>
+                <td>${r.detalle || '—'}</td>
+                <td>${r.ip || '—'}</td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table></body></html>';
+        return html;
+    }
+
+    function downloadPDF(filename, content) {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        printWindow.print();
+    }
+
+    function generatePersonnelCSV(personnel) {
+        let csv = 'Cédula,Nombre,Apellido,Email,Rol,Estado\n';
+        personnel.forEach(p => {
+            csv += `"${p.cedula}","${p.nombre}","${p.apellido}","${p.email}","${p.rol}","${p.activo ? 'Activo' : 'Inactivo'}"\n`;
+        });
+        return csv;
+    }
+
+    function downloadCSV(filename, content) {
+        const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
 </script>
 </body>
 </html>

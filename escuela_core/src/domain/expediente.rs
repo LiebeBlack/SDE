@@ -15,6 +15,7 @@ pub enum EstadoExpediente {
 }
 
 impl EstadoExpediente {
+    /// Convierte el estado a su representación en string (snake_case)
     pub fn as_str(&self) -> &'static str {
         match self {
             EstadoExpediente::Activo => "activo",
@@ -24,6 +25,7 @@ impl EstadoExpediente {
         }
     }
 
+    /// Crea un EstadoExpediente desde un string
     pub fn from_str(s: &str) -> AppResult<Self> {
         match s.to_lowercase().as_str() {
             "activo" => Ok(EstadoExpediente::Activo),
@@ -35,18 +37,22 @@ impl EstadoExpediente {
     }
 }
 
+/// Identificador único de expediente (wrapper alrededor de UUID)
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct ExpedienteId(Uuid);
 
 impl ExpedienteId {
+    /// Crea un nuevo ExpedienteId con UUID v4 aleatorio
     pub fn new() -> Self {
         ExpedienteId(Uuid::new_v4())
     }
 
+    /// Crea un ExpedienteId desde un UUID existente
     pub fn from_uuid(uuid: Uuid) -> Self {
         ExpedienteId(uuid)
     }
 
+    /// Retorna el UUID subyacente
     pub fn as_uuid(&self) -> Uuid {
         self.0
     }

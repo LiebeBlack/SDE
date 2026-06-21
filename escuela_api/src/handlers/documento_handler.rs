@@ -1,8 +1,9 @@
 use axum::{
     extract::{State, Path, Multipart},
     Json,
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     http::StatusCode,
+    body::Body,
 };
 use serde::Serialize;
 use escuela_core::domain::documento::{Documento, CategoriaDocumento};
@@ -11,6 +12,7 @@ use escuela_shared::AppResult;
 use crate::state::AppState;
 use escuela_core::security::rbac::{require_permission, Action, Resource};
 use escuela_storage::audit::AccionAuditoria;
+use std::fs;
 
 #[derive(Debug, Serialize)]
 pub struct DocumentoResponse {
@@ -79,6 +81,15 @@ pub async fn crear_documento(
                 let bytes = field.bytes().await.map_err(|e| {
                     escuela_shared::AppError::InternalError(format!("Error al leer archivo: {}", e))
                 })?;
+                
+                // Validar tamaño máximo de archivo (10MB)
+                const MAX_FILE_SIZE: usize = 10 * 1024 * 1024; // 10MB
+                if bytes.len() > MAX_FILE_SIZE {
+                    return Err(escuela_shared::AppError::ValidationError(
+                        format!("El archivo excede el tamaño máximo de 10MB. Tamaño actual: {} bytes", bytes.len())
+                    ));
+                }
+                
                 file_bytes = Some(bytes.to_vec());
             }
             "observaciones" => {
@@ -192,4 +203,47 @@ pub async fn foliar_documento(
     ).await;
     
     Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn descargar_documento(
+    State(state): State<AppState>,
+    auth_user: Usuario,
+    Path((expediente_id, documento_id)): Path<(String, String)>,
+) -> AppResult<Response> {
+    require_permission(&auth_user, Action::Read, Resource::Documento)?;
+    let documento_uuid = uuid::Uuid::parse_str(&documento_id)
+        .map_err(|_| escuela_shared::AppError::ValidationError("ID de documento inválido".to_string()))?;
+    
+    let expediente_uuid = uuid::Uuid::parse_str(&expediente_id)
+        .map_err(|_| escuela_shared::AppError::ValidationError("ID de expediente inválido".to_string()))?;
+    let expediente_id_obj = escuela_core::domain::expediente::ExpedienteId::from_uuid(expediente_uuid);
+    
+    // Obtener el documento a través del expediente para verificar la relación
+    let documentos = state.documento_repo.listar_por_expediente(&expediente_id_obj).await?;
+    let documento = documentos.into_iter()
+        .find(|d| d.id.as_uuid() == documento_uuid)
+        .ok_or_else(|| escuela_shared::AppError::NotFound("Documento no encontrado en este expediente".to_string()))?;
+    
+    // Leer el archivo del sistema de archivos
+    let file_bytes = fs::read(&documento.ruta_local)
+        .map_err(|e| escuela_shared::AppError::InternalError(format!("Error leyendo archivo: {}", e)))?;
+    
+    // Obtener el tipo MIME
+    let content_type = documento.tipo_mime.as_deref().unwrap_or("application/octet-stream");
+    
+    let _ = state.audit_service.registrar_accion(
+        Some(auth_user.id.as_uuid().to_string()),
+        AccionAuditoria::ConsultaDocumento,
+        format!("Descarga de documento ID: {} (Expediente ID: {})", documento_id, expediente_id),
+        None,
+        None,
+    ).await;
+    
+    // Crear respuesta con el archivo
+    let headers = [
+        ("Content-Type", content_type.to_string()),
+        ("Content-Disposition", format!("attachment; filename=\"{}\"", documento.nombre_archivo)),
+    ];
+    
+    Ok((StatusCode::OK, headers, Body::from(file_bytes)).into_response())
 }

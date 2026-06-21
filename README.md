@@ -82,6 +82,13 @@ TesisYoangel/
 
 ## 🚀 Características Principales
 
+### **Modo Offline-First (Local)**
+- **Funcionamiento completamente local**: No requiere conexión a internet
+- **Servidor autónomo**: Ejecuta en localhost o red local (LAN)
+- **Sin dependencias externas**: Todos los recursos (CSS, JS, iconos) incluidos localmente
+- **Base de datos SQLite**: Almacenamiento local sin servidor de base de datos
+- **Acceso multi-dispositivo**: Configurado para acceso desde cualquier PC en la red local
+
 ### **Seguridad Máxima**
 - **Tipado estricto**: Validación en tiempo de compilación para evitar estados inválidos
 - **Inmutabilidad de archivos**: Hash SHA-256 para cada documento almacenado
@@ -98,44 +105,103 @@ TesisYoangel/
 - **Traits de servicios**: Fácil agregar nuevas implementaciones (ej. cambiar a PostgreSQL)
 - **Crate independiente**: Cada crate puede compilarse y testearse independientemente
 
-## 🛠️ Instalación y Ejecución
+## 🛠️ Instalación y Ejecución (Modo Offline-First)
 
 ### **Requisitos Previos**
 - Rust 1.75 o superior
 - Sistema operativo: Windows, Linux o macOS
+- **NO requiere conexión a internet** para funcionamiento
 
-### **Compilación**
+### **Compilación y Ejecución Local**
 
 ```bash
 # Clonar el repositorio
 cd TesisYoangel
 
-# Compilar en modo desarrollo
-cargo build
-
 # Compilar en modo release (optimizado para producción)
 cargo build --release
+
+# Ejecutar el servidor (se iniciará en http://localhost:3000)
+cargo run --release
+
+# O ejecutar el binario compilado directamente
+./target/release/escuela_api  # Linux/Mac
+./target/release/escuela_api.exe  # Windows
 ```
 
-### **Ejecución**
+### **Acceso desde la misma PC**
+1. Ejecutar el servidor como se indica arriba
+2. Abrir navegador en: `http://localhost:3000`
+3. El sistema funcionará completamente sin conexión a internet
 
-```bash
-# Ejecutar con configuración por defecto
-cargo run --bin escuela_api
+### **Acceso desde otros dispositivos en red local (LAN)**
 
-# Ejecutar con configuración personalizada
-DATABASE_PATH=mi_escuela.db BIND_ADDRESS=127.0.0.1:8080 cargo run --bin escuela_api
+Para acceder desde otras computadoras en la misma red:
 
-# Ejecutar binario compilado (release)
-./target/release/escuela_api
-```
+1. **Asegurar que el servidor esté escuchando en 0.0.0.0** (configuración por defecto)
+2. **Obtener la IP local** del servidor:
+   - Windows: `ipconfig` (buscar IPv4 Address)
+   - Linux/Mac: `ifconfig` o `ip a` (buscar inet)
+3. **Acceder desde otro dispositivo** usando la IP:
+   ```
+   http://192.168.1.X:3000
+   ```
+4. **Configurar firewall** si es necesario para permitir conexiones en el puerto 3000
 
-### **Variables de Entorno**
+### **Variables de Entorno (Opcionales)**
 
 | Variable | Descripción | Valor por Defecto |
 |----------|-------------|-------------------|
 | `DATABASE_PATH` | Ruta del archivo SQLite | `escuela.db` |
+| `STORAGE_PATH` | Ruta de almacenamiento de documentos | `storage` |
+| `STATIC_PATH` | Ruta de archivos estáticos (HTML, CSS, JS) | `static` |
 | `BIND_ADDRESS` | Dirección y puerto del servidor | `0.0.0.0:3000` |
+
+### **Scripts de Deployment**
+
+El proyecto incluye scripts para facilitar el deployment:
+
+**Windows**:
+```bash
+deploy.bat
+```
+
+**Linux/Mac**:
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+### **Verificación de Funcionamiento Offline**
+
+Para verificar que el sistema funciona completamente sin internet:
+
+1. **Desconectar internet** del servidor
+2. **Ejecutar el servidor**: `cargo run --release`
+3. **Abrir navegador** en: `http://localhost:3000`
+4. **Verificar que**:
+   - La página carga correctamente (sin errores de CDN)
+   - Los iconos Lucide se muestran correctamente
+   - El login funciona
+   - Se pueden crear expedientes
+   - Se pueden subir documentos
+   - Todas las funcionalidades operan normalmente
+
+### **Troubleshooting Offline**
+
+**Problema**: "No se pudo conectar con el servidor local"
+- **Solución**: Verificar que el servidor esté ejecutándose en el puerto 3000
+- **Comando**: `netstat -an | findstr 3000` (Windows) o `lsof -i :3000` (Linux/Mac)
+
+**Problema**: "Iconos no se muestran"
+- **Solución**: Verificar que la carpeta `static/js/lucide.min.js` exista
+- **Comando**: Verificar que el archivo tenga ~400KB (tamaño correcto)
+
+**Problema**: "No puedo acceder desde otra PC en la red"
+- **Solución**: 
+  1. Verificar que BIND_ADDRESS sea `0.0.0.0:3000`
+  2. Configurar firewall para permitir puerto 3000
+  3. Verificar que ambas PCs estén en la misma red
 
 ## 📡 API Endpoints
 

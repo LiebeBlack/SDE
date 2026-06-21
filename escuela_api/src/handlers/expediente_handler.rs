@@ -81,6 +81,12 @@ pub async fn crear_expediente(
     require_permission(&auth_user, Action::Write, Resource::Expediente)?;
     let cedula = escuela_shared::Cedula::new(req.cedula.clone())?;
     
+    // Validar que no exista un expediente con la misma cédula
+    let existing = state.expediente_repo.obtener_por_cedula(&req.cedula).await;
+    if existing.is_ok() {
+        return Err(AppError::ValidationError("Ya existe un expediente con esta cédula".to_string()));
+    }
+    
     let fecha_nacimiento = req.fecha_nacimiento
         .and_then(|s| chrono::DateTime::parse_from_rfc3339(&s).ok())
         .map(|dt| dt.with_timezone(&chrono::Utc));

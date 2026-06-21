@@ -39,13 +39,44 @@ pub struct Claims {
     pub exp: usize,
 }
 
-// Clave secreta (en producción debe venir de una variable de entorno)
-const JWT_SECRET: &[u8] = b"tesis_yoangel_secret_key_2026";
+// Clave secreta desde variable de entorno o valor por defecto
+pub fn get_jwt_secret() -> Vec<u8> {
+    std::env::var("JWT_SECRET")
+        .unwrap_or_else(|_| "tesis_yoangel_secret_key_2026".to_string())
+        .into_bytes()
+}
 
 pub async fn login(
+    headers: axum::http::HeaderMap,
     State(state): State<AppState>,
     Json(req): Json<LoginRequest>,
 ) -> AppResult<impl IntoResponse> {
+    let ip_address = headers
+        .get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string())
+        .or_else(|| headers.get("x-real-ip").and_then(|v| v.to_str().ok()).map(|s| s.to_string()));
+    
+    let user_agent = headers
+        .get("user-agent")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.to_string());
+
+    let rate_limit_key = ip_address.clone().unwrap_or_else(|| req.cedula.clone());
+    
+    // Validar rate limit
+    {
+        let mut attempts = state.login_attempts.lock().unwrap();
+        let now = chrono::Utc::now();
+        attempts.retain(|_, (_, timestamp)| now.signed_duration_since(*timestamp).num_minutes() < 15);
+        
+        if let Some((count, _)) = attempts.get(&rate_limit_key) {
+            if *count >= 5 {
+                return Err(AppError::AuthenticationError("Demasiados intentos fallidos. Intente nuevamente en 15 minutos.".to_string()));
+            }
+        }
+    }
+
     // buscar por cédula
     let row = sqlx::query_as::<_, (String, String, String, String, String, i32)>(
         "SELECT id, nombre, apellido, rol, password_hash, activo FROM usuarios WHERE cedula = ?"
@@ -57,16 +88,57 @@ pub async fn login(
 
     let (id, nombre, apellido, rol, password_hash, activo) = match row {
         Some(r) => r,
-        None => return Err(AppError::AuthenticationError("Credenciales inválidas".to_string())),
+        None => {
+            let _ = state.audit_service.registrar_accion(
+                None,
+                AccionAuditoria::LoginFallido,
+                format!("Intento de login con cédula no registrada: {}", req.cedula),
+                ip_address.clone(),
+                user_agent.clone(),
+            ).await;
+            
+            let mut attempts = state.login_attempts.lock().map_err(|_| AppError::InternalError("Error al obtener lock de intentos de login".to_string()))?;
+            let entry = attempts.entry(rate_limit_key).or_insert((0, chrono::Utc::now()));
+            entry.0 += 1;
+            entry.1 = chrono::Utc::now();
+            
+            return Err(AppError::AuthenticationError("Credenciales inválidas".to_string()));
+        }
     };
 
     if activo == 0 {
+        let _ = state.audit_service.registrar_accion(
+            Some(id.clone()),
+            AccionAuditoria::LoginFallido,
+            "Intento de login de usuario inactivo".to_string(),
+            ip_address.clone(),
+            user_agent.clone(),
+        ).await;
         return Err(AppError::AuthenticationError("Usuario inactivo".to_string()));
     }
 
     let is_valid = verify_password(&req.password, &password_hash)?;
     if !is_valid {
+        let _ = state.audit_service.registrar_accion(
+            Some(id.clone()),
+            AccionAuditoria::LoginFallido,
+            "Contraseña incorrecta".to_string(),
+            ip_address.clone(),
+            user_agent.clone(),
+        ).await;
+        
+        let mut attempts = state.login_attempts.lock().unwrap();
+        let entry = attempts.entry(rate_limit_key).or_insert((0, chrono::Utc::now()));
+        entry.0 += 1;
+        entry.1 = chrono::Utc::now();
+        
         return Err(AppError::AuthenticationError("Credenciales inválidas".to_string()));
+    }
+
+    // Resetear intentos al loguearse con éxito
+    {
+        let mut attempts = state.login_attempts.lock().map_err(|_| AppError::InternalError("Error al obtener lock de intentos de login".to_string()))?;
+        attempts.remove(&rate_limit_key);
     }
 
     // registrar acceso
@@ -79,7 +151,7 @@ pub async fn login(
     // Generar JWT
     let expiration = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .map_err(|_| AppError::InternalError("Error al obtener tiempo del sistema".to_string()))?
         .as_secs() as usize + 24 * 3600; // 24 horas
 
     let claims = Claims {
@@ -88,15 +160,15 @@ pub async fn login(
         exp: expiration,
     };
 
-    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(JWT_SECRET))
+    let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(&get_jwt_secret()))
         .map_err(|e| AppError::InternalError(format!("Error generando token: {}", e)))?;
 
     let _ = state.audit_service.registrar_accion(
         Some(id.clone()),
         AccionAuditoria::LoginUsuario,
         format!("Inicio de sesión exitoso. Cédula: {}", req.cedula),
-        None,
-        None,
+        ip_address,
+        user_agent,
     ).await;
 
     let response = LoginResponse {
@@ -111,3 +183,4 @@ pub async fn login(
 
     Ok((StatusCode::OK, Json(response)))
 }
+

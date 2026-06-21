@@ -110,6 +110,16 @@ pub fn check_permission(
                 "Administrador puede ver reportes".to_string()
             )
         }
+        (Rol::Administrativo, Action::Read, Resource::Usuario) => {
+            AuthorizationResult::allowed(
+                "Administrador puede ver usuarios".to_string()
+            )
+        }
+        (Rol::Administrativo, Action::Read, Resource::Sistema) => {
+            AuthorizationResult::allowed(
+                "Administrador puede ver información del sistema".to_string()
+            )
+        }
         
         // Denegar acciones no permitidas
         (rol, action, resource) => {

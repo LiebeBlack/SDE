@@ -2,6 +2,9 @@ use sqlx::{SqlitePool, sqlite::{SqlitePoolOptions, SqliteConnectOptions}};
 use anyhow::Result;
 use tracing::info;
 use std::str::FromStr;
+use escuela_shared::{Email, Cedula};
+use escuela_core::domain::usuario::{Usuario, Rol};
+use escuela_core::security::crypto::hash_password;
 
 pub struct Database {
     pool: SqlitePool,
@@ -32,9 +35,6 @@ impl Database {
 
     async fn migrate(&self) -> Result<()> {
         info!("Ejecutando migraciones de base de datos");
-        
-        // son las 3 AM y ya no quedan cotufas, pero esta migración funciona
-        // así que no la toqen — Yoangel
         
         sqlx::query(
             r#"
@@ -157,10 +157,6 @@ impl Database {
     // }
 
     async fn seed_users(&self) -> Result<()> {
-        use escuela_core::domain::usuario::{Usuario, Rol};
-        use escuela_core::security::crypto::hash_password;
-        use escuela_shared::{Email, Cedula};
-
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM usuarios")
             .fetch_one(&self.pool)
             .await?;

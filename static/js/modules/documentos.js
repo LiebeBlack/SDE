@@ -117,16 +117,23 @@ export class DocumentosManager {
         docs.forEach(doc => {
             const date = new Date(doc.creado_en).toLocaleDateString('es-ES');
             const size = doc.tamaño_bytes ? Math.round(doc.tamaño_bytes / 1024) + ' KB' : 'N/A';
+            const foliadoBadge = doc.foliado ? 
+                '<span class="badge success">Foliado</span>' : 
+                '<span class="badge warning">Sin Foliar</span>';
             
             html += `
-                <div class="doc-card glass-panel">
+                <div class="doc-card glass-panel" data-doc-id="${doc.id}">
                     <div class="doc-icon bg-blue"><i data-lucide="file-text"></i></div>
                     <div class="doc-info">
                         <h4>${doc.nombre_archivo}</h4>
                         <p>${doc.categoria} • ${size} • ${date}</p>
+                        <div class="doc-meta">${foliadoBadge}</div>
                     </div>
                     <div class="doc-actions">
-                        <button class="btn-icon"><i data-lucide="download"></i></button>
+                        <button class="btn-icon btn-download" data-doc-id="${doc.id}" title="Descargar"><i data-lucide="download"></i></button>
+                        ${!doc.foliado ? `
+                        <button class="btn-icon btn-foliar" data-doc-id="${doc.id}" title="Foliar Documento"><i data-lucide="check-circle"></i></button>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -134,6 +141,35 @@ export class DocumentosManager {
 
         this.docsContainer.innerHTML = html;
         if (window.lucide) lucide.createIcons();
+
+        // Agregar event listeners
+        this.docsContainer.querySelectorAll('.btn-foliar').forEach(btn => {
+            btn.addEventListener('click', () => this.foliarDocumento(btn.dataset.docId));
+        });
+
+        this.docsContainer.querySelectorAll('.btn-download').forEach(btn => {
+            btn.addEventListener('click', () => this.descargarDocumento(btn.dataset.docId));
+        });
+    }
+
+    async foliarDocumento(documentoId) {
+        try {
+            await ApiClient.foliarDocumento(this.currentExpedienteId, documentoId);
+            UI.showToast('Documento foliado correctamente', 'success');
+            await this.loadDocumentos();
+        } catch (error) {
+            UI.showToast(error.message, 'error');
+        }
+    }
+
+    async descargarDocumento(documentoId) {
+        try {
+            const endpoint = `/expedientes/${this.currentExpedienteId}/documentos/${documentoId}/descargar`;
+            await ApiClient.downloadFile(endpoint);
+            UI.showToast('Documento descargado correctamente', 'success');
+        } catch (error) {
+            UI.showToast(error.message, 'error');
+        }
     }
 
     addLoadingCard(id, filename) {

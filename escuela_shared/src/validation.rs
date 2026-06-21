@@ -1,6 +1,20 @@
+//! Funciones de validación comunes para el sistema
+
+/// Valida el formato de un email
+/// 
+/// # Argumentos
+/// * `email` - String slice que representa el email a validar
+/// 
+/// # Retorna
+/// * `Result<(), crate::AppError>` - Ok si es válido, Error si no lo es
+/// 
+/// # Reglas de validación
+/// - Debe contener exactamente un símbolo '@'
+/// - La parte local y el dominio no pueden estar vacíos
+/// - El dominio debe contener al menos un punto
+/// - El dominio no puede empezar ni terminar con punto
+/// - No puede contener espacios
 pub fn validate_email(email: &str) -> Result<(), crate::AppError> {
-    // Validación básica de email: debe tener un '@', partes no vacías,
-    // dominio con al menos un '.', y sin espacios.
     let trimmed = email.trim();
     if trimmed.is_empty() {
         return Err(crate::AppError::ValidationError("Email inválido".to_string()));

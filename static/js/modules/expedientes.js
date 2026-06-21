@@ -7,7 +7,10 @@ export class ExpedientesManager {
         this.fullTable = document.getElementById('full-table-container');
         this.recentTable = document.getElementById('recent-table-container');
         this.docManager = new DocumentosManager();
+        this.filterEstado = document.getElementById('filter-estado');
+        this.cachedExpedientes = [];
         this.setupModals();
+        this.setupFilters();
     }
 
     async loadAll() {
@@ -15,7 +18,8 @@ export class ExpedientesManager {
         this.fullTable.innerHTML = `<table><tbody>${UI.getSkeletonTable(5, 5)}</tbody></table>`;
         try {
             const expedientes = await ApiClient.getExpedientes();
-            this.renderTable(this.fullTable, expedientes);
+            this.cachedExpedientes = expedientes;
+            this.applyFilter();
             this.updateDashboardStats(expedientes);
         } catch (error) {
             if (error.message.startsWith('OFFLINE:')) {
@@ -27,12 +31,45 @@ export class ExpedientesManager {
         }
     }
 
+    setupFilters() {
+        if (this.filterEstado) {
+            this.filterEstado.addEventListener('change', () => this.applyFilter());
+        }
+    }
+
+    applyFilter() {
+        const filtro = this.filterEstado ? this.filterEstado.value : '';
+        let filtered = this.cachedExpedientes;
+        
+        if (filtro) {
+            filtered = this.cachedExpedientes.filter(exp => exp.estado === filtro);
+        }
+        
+        this.renderTable(this.fullTable, filtered);
+    }
+
     async search(term) {
         this.fullTable.innerHTML = `<table><tbody>${UI.getSkeletonTable(3, 5)}</tbody></table>`;
         if (this.recentTable) this.recentTable.innerHTML = `<table><tbody>${UI.getSkeletonTable(3, 5)}</tbody></table>`;
         
         try {
-            const expedientes = await ApiClient.searchExpedientes(term);
+            // Detectar si es una cédula (empieza con V- o E- o es solo números)
+            const esCedula = /^([VE]-?\d+|\d+)$/.test(term.trim());
+            
+            let expedientes;
+            if (esCedula) {
+                // Búsqueda por cédula exacta
+                try {
+                    const exp = await ApiClient.getExpedientePorCedula(term.trim());
+                    expedientes = exp ? [exp] : [];
+                } catch (error) {
+                    expedientes = [];
+                }
+            } else {
+                // Búsqueda general
+                expedientes = await ApiClient.searchExpedientes(term);
+            }
+            
             this.renderTable(this.fullTable, expedientes);
             if (this.recentTable) this.renderTable(this.recentTable, expedientes.slice(0,5));
         } catch (error) {
@@ -40,16 +77,58 @@ export class ExpedientesManager {
         }
     }
 
-    updateDashboardStats(expedientes) {
+    async advancedSearch(params) {
+        this.fullTable.innerHTML = `<table><tbody>${UI.getSkeletonTable(5, 5)}</tbody></table>`;
+        
+        try {
+            // Filtrar parámetros vacíos
+            const filteredParams = Object.fromEntries(
+                Object.entries(params).filter(([_, v]) => v !== '' && v !== null)
+            );
+            
+            if (Object.keys(filteredParams).length === 0) {
+                UI.showToast('Ingresa al menos un criterio de búsqueda', 'warning');
+                this.loadAll();
+                return;
+            }
+
+            const expedientes = await ApiClient.buscarAvanzadaExpedientes(filteredParams);
+            this.renderTable(this.fullTable, expedientes);
+            UI.showToast(`Se encontraron ${expedientes.length} resultados`, 'success');
+        } catch (error) {
+            UI.showToast('Error en la búsqueda avanzada', 'error');
+        }
+    }
+
+    async updateDashboardStats(expedientes) {
         const els = {
             total: document.getElementById('stat-expedientes'),
             activos: document.getElementById('stat-activos'),
             revision: document.getElementById('stat-revision'),
+            documentos: document.getElementById('stat-documentos'),
+            inactivos: document.getElementById('stat-inactivos'),
+            usuarios: document.getElementById('stat-usuarios')
         };
         
         if (els.total) els.total.textContent = expedientes.length;
         if (els.activos) els.activos.textContent = expedientes.filter(e => e.estado === 'Activo').length;
         if (els.revision) els.revision.textContent = expedientes.filter(e => e.estado === 'EnRevision').length;
+        if (els.inactivos) els.inactivos.textContent = expedientes.filter(e => e.estado === 'Inactivo').length;
+        
+        // Calcular total de documentos
+        let totalDocumentos = 0;
+        for (const exp of expedientes) {
+            totalDocumentos += exp.documentos_count || 0;
+        }
+        if (els.documentos) els.documentos.textContent = totalDocumentos;
+        
+        // Cargar usuarios
+        try {
+            const usuarios = await ApiClient.getUsuarios();
+            if (els.usuarios) els.usuarios.textContent = usuarios.length;
+        } catch (e) {
+            if (els.usuarios) els.usuarios.textContent = '--';
+        }
         
         if (this.recentTable) {
             this.renderTable(this.recentTable, expedientes.slice(0, 5));

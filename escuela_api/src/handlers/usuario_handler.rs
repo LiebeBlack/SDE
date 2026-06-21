@@ -1,12 +1,12 @@
 use axum::{
-    extract::State,
+    extract::{State, Path},
     Json,
     response::IntoResponse,
     http::StatusCode,
 };
 use serde::{Deserialize, Serialize};
-use escuela_core::domain::usuario::{Usuario, Rol};
-use escuela_shared::{AppResult, Email};
+use escuela_core::domain::usuario::{Usuario, Rol, UsuarioId};
+use escuela_shared::{AppResult, Email, AppError};
 use crate::state::AppState;
 use escuela_core::security::rbac::{require_permission, Action, Resource};
 use escuela_storage::audit::AccionAuditoria;
@@ -18,6 +18,7 @@ pub struct CrearUsuarioRequest {
     pub cedula: String,
     pub email: String,
     pub rol: String,
+    #[serde(default)]
     pub password: Option<String>,
 }
 
@@ -61,6 +62,18 @@ pub async fn crear_usuario(
     let email = Email::new(req.email.clone())?;
     let rol = Rol::from_str(&req.rol)?;
     
+    // Validar que no exista un usuario con la misma cédula
+    let existing_cedula = state.usuario_repo.obtener_por_cedula(&req.cedula).await;
+    if existing_cedula.is_ok() {
+        return Err(AppError::ValidationError("Ya existe un usuario con esta cédula".to_string()));
+    }
+    
+    // Validar que no exista un usuario con el mismo email
+    let existing_email = state.usuario_repo.obtener_por_email(&req.email).await;
+    if existing_email.is_ok() {
+        return Err(AppError::ValidationError("Ya existe un usuario con este email".to_string()));
+    }
+    
     // Hash password (por defecto usar cedula si no mandan password)
     let password_plain = req.password.unwrap_or_else(|| req.cedula.clone());
     let password_hash = escuela_core::security::crypto::hash_password(&password_plain)?;
@@ -79,7 +92,7 @@ pub async fn crear_usuario(
 
     let _ = state.audit_service.registrar_accion(
         Some(auth_user.id.as_uuid().to_string()),
-        AccionAuditoria::BusquedaAvanzada, // Como no hay un enum para Usuarios, usamos uno genérico
+        AccionAuditoria::CreacionUsuario,
         format!("Creación de usuario: {} {}", req.nombre, req.apellido),
         None,
         None,
@@ -102,4 +115,37 @@ pub async fn listar_usuarios(
         .collect();
     
     Ok(Json(response))
+}
+
+pub async fn toggle_usuario_estado(
+    State(state): State<AppState>,
+    auth_user: Usuario,
+    Path(usuario_id): Path<String>,
+) -> AppResult<impl IntoResponse> {
+    require_permission(&auth_user, Action::Modify, Resource::Usuario)?;
+    
+    let uuid = uuid::Uuid::parse_str(&usuario_id)
+        .map_err(|_| escuela_shared::AppError::ValidationError("ID de usuario inválido".to_string()))?;
+    let usuario_id_obj = UsuarioId::from_uuid(uuid);
+    
+    let mut usuario = state.usuario_repo.obtener_por_id(&usuario_id_obj).await?;
+    
+    // Cambiar estado
+    if usuario.activo {
+        usuario.desactivar();
+    } else {
+        usuario.activar();
+    }
+    
+    state.usuario_repo.actualizar(&usuario).await?;
+    
+    let _ = state.audit_service.registrar_accion(
+        Some(auth_user.id.as_uuid().to_string()),
+        AccionAuditoria::ModificacionUsuario,
+        format!("Cambio de estado de usuario ID: {} a {}", usuario_id, if usuario.activo { "activo" } else { "inactivo" }),
+        None,
+        None,
+    ).await;
+    
+    Ok(StatusCode::NO_CONTENT)
 }

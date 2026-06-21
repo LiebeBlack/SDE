@@ -1,3 +1,8 @@
+//! Núcleo del sistema de gestión escolar
+//! Contiene la lógica de negocio pura, entidades del dominio, traits de servicios y utilidades de seguridad
+//! 
+//! Este crate sigue los principios de Clean Architecture y no depende de infraestructura
+
 pub mod domain;
 pub mod services;
 pub mod security;

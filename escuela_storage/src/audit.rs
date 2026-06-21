@@ -19,6 +19,10 @@ pub enum AccionAuditoria {
     LoginUsuario,
     LogoutUsuario,
     CambioEstadoExpediente,
+    CreacionUsuario,
+    ModificacionUsuario,
+    EliminacionUsuario,
+    LoginFallido,
 }
 
 impl AccionAuditoria {
@@ -37,6 +41,10 @@ impl AccionAuditoria {
             AccionAuditoria::LoginUsuario => "LOGIN_USUARIO",
             AccionAuditoria::LogoutUsuario => "LOGOUT_USUARIO",
             AccionAuditoria::CambioEstadoExpediente => "CAMBIO_ESTADO_EXPEDIENTE",
+            AccionAuditoria::CreacionUsuario => "CREACION_USUARIO",
+            AccionAuditoria::ModificacionUsuario => "MODIFICACION_USUARIO",
+            AccionAuditoria::EliminacionUsuario => "ELIMINACION_USUARIO",
+            AccionAuditoria::LoginFallido => "LOGIN_FALLIDO",
         }
     }
 
@@ -55,6 +63,10 @@ impl AccionAuditoria {
             "LOGIN_USUARIO" => Ok(AccionAuditoria::LoginUsuario),
             "LOGOUT_USUARIO" => Ok(AccionAuditoria::LogoutUsuario),
             "CAMBIO_ESTADO_EXPEDIENTE" => Ok(AccionAuditoria::CambioEstadoExpediente),
+            "CREACION_USUARIO" => Ok(AccionAuditoria::CreacionUsuario),
+            "MODIFICACION_USUARIO" => Ok(AccionAuditoria::ModificacionUsuario),
+            "ELIMINACION_USUARIO" => Ok(AccionAuditoria::EliminacionUsuario),
+            "LOGIN_FALLIDO" => Ok(AccionAuditoria::LoginFallido),
             _ => Err(AppError::ValidationError(format!("Acción de auditoría inválida: {}", s))),
         }
     }
