@@ -20,19 +20,48 @@ escuela.db
 *.swp
 *.swo
 *~
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
 
 # OS
 .DS_Store
 Thumbs.db
+.Spotlight-V100
+.Trashes
 
 # Logs
 *.log
 server.log
+logs/
 
 # Environment
 .env
 .env.local
+.env.*.local
 
 # Build artifacts
 /dist/
 /build/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Test coverage
+tarpaulin-report.html
+cobertura.xml
+
+# Documentation
+/doc/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

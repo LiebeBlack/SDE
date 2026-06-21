@@ -1,24 +1,44 @@
-# Guía de Despliegue - Sistema de Gestión Escolar
+# Deployment Guide - School Management System
 
-## Instrucciones de Compilación
+## Overview
 
-### Requisitos Previos
-- Rust 1.75 o superior
-- Sistema operativo: Windows, Linux o macOS
+This guide provides comprehensive instructions for deploying the Sistema de Gestión Escolar in various environments, from development to production.
 
-### Compilación Manual
+## Prerequisites
+
+- Rust 1.75 or higher
+- System: Windows, Linux, or macOS
+- Minimum 512MB RAM
+- 100MB disk space for application
+- Additional space for document storage
+
+## Compilation Instructions
+
+### Manual Compilation
 
 ```bash
-# Compilar en modo desarrollo
+# Compile in development mode
 cargo build
 
-# Compilar en modo release (optimizado para producción)
+# Compile in release mode (optimized for production)
 cargo build --release
 ```
 
-El binario compilado se encontrará en:
+The compiled binary will be located at:
 - **Windows**: `target/release/escuela_api.exe`
 - **Linux/macOS**: `target/release/escuela_api`
+
+### Cross-Compilation
+
+For cross-compilation to different targets:
+
+```bash
+# Add target
+rustup target add x86_64-unknown-linux-musl
+
+# Cross-compile
+cargo build --release --target x86_64-unknown-linux-musl
+```
 
 ## Scripts de Automatización
 
@@ -69,28 +89,29 @@ REM Despliegue completo (compilar + iniciar)
 deploy.bat deploy
 ```
 
-## Variables de Entorno
+## Environment Variables
 
-| Variable | Descripción | Valor por Defecto |
+| Variable | Description | Default Value |
 |----------|-------------|-------------------|
-| `DATABASE_PATH` | Ruta del archivo SQLite | `escuela.db` |
-| `STORAGE_PATH` | Ruta de almacenamiento de archivos | `storage` |
-| `BIND_ADDRESS` | Dirección y puerto del servidor | `0.0.0.0:3000` |
+| `DATABASE_PATH` | SQLite database file path | `escuela.db` |
+| `STORAGE_PATH` | Document storage directory | `storage` |
+| `STATIC_PATH` | Static files directory (HTML, CSS, JS) | `static` |
+| `BIND_ADDRESS` | Server address and port | `0.0.0.0:3000` |
 
-### Configuración Personalizada
+### Custom Configuration
 
 #### Linux/macOS
 ```bash
-export DATABASE_PATH=mi_escuela.db
-export STORAGE_PATH=archivos
+export DATABASE_PATH=my_school.db
+export STORAGE_PATH=documents
 export BIND_ADDRESS=127.0.0.1:8080
 ./deploy.sh start
 ```
 
 #### Windows
 ```cmd
-set DATABASE_PATH=mi_escuela.db
-set STORAGE_PATH=archivos
+set DATABASE_PATH=my_school.db
+set STORAGE_PATH=documents
 set BIND_ADDRESS=127.0.0.1:8080
 deploy.bat start
 ```
@@ -170,25 +191,83 @@ El sistema está optimizado para correr en hardware antiguo o limitado:
 - **Sin dependencias de red**: Funciona completamente offline
 - **Inicio rápido**: Menos de 2 segundos en arranque
 
-## Solución de Problemas
+## Production Deployment
 
-### El servidor no inicia
+### System Service Setup (Linux)
 
-1. Verificar que el binario existe: `ls target/release/escuela_api` (Linux/macOS) o `dir target\release\escuela_api.exe` (Windows)
-2. Verificar que el puerto no está en uso: `netstat -tuln | grep 3000` (Linux/macOS) o `netstat -an | findstr :3000` (Windows)
-3. Revisar logs: `cat server.log` (Linux/macOS) o `type server.log` (Windows)
+Create a systemd service file:
 
-### Errores de base de datos
+```bash
+sudo nano /etc/systemd/system/escuela-api.service
+```
 
-1. Verificar que el archivo `.db` existe
-2. Verificar permisos de escritura en el directorio
-3. Ejecutar verificación de integridad al iniciar
+Add the following content:
 
-### Problemas de almacenamiento
+```ini
+[Unit]
+Description=School Management System API
+After=network.target
 
-1. Verificar que el directorio de almacenamiento existe
-2. Verificar permisos de escritura
-3. Verificar espacio en disco disponible
+[Service]
+Type=simple
+User=escuela
+WorkingDirectory=/opt/escuela-api
+ExecStart=/opt/escuela-api/escuela_api
+Restart=always
+RestartSec=10
+Environment="DATABASE_PATH=/opt/escuela-api/escuela.db"
+Environment="STORAGE_PATH=/opt/escuela-api/storage"
+Environment="BIND_ADDRESS=0.0.0.0:3000"
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable escuela-api
+sudo systemctl start escuela-api
+sudo systemctl status escuela-api
+```
+
+### Windows Service Setup
+
+Use NSSM (Non-Sucking Service Manager):
+
+```cmd
+nssm install "School Management API" "C:\path\to\escuela_api.exe"
+nssm set "School Management API" AppDirectory "C:\path\to"
+nssm set "School Management API" DisplayName "School Management System"
+nssm start "School Management API"
+```
+
+### Docker Deployment (Optional)
+
+Create a `Dockerfile`:
+
+```dockerfile
+FROM rust:1.75 as builder
+WORKDIR /app
+COPY . .
+RUN cargo build --release
+
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /app/target/release/escuela_api /usr/local/bin/
+WORKDIR /app
+COPY static /app/static
+EXPOSE 3000
+CMD ["escuela_api"]
+```
+
+Build and run:
+
+```bash
+docker build -t escuela-api .
+docker run -p 3000:3000 -v $(pwd)/storage:/app/storage escuela-api
+```
 
 ## Optimizaciones de Producción
 
@@ -205,16 +284,123 @@ strip = true           # Remover símbolos de debug
 
 Esto resulta en un binario de aproximadamente 3-5 MB, ideal para despliegue en escuelas con hardware limitado.
 
-## Seguridad
+## Troubleshooting
 
-- **Hash SHA-256**: Cada archivo tiene un hash único para verificar integridad
-- **RBAC**: Control de acceso basado en roles (Director, RRHH, Administrador)
-- **Auditoría completa**: Todas las acciones quedan registradas
-- **Validación en tiempo de compilación**: Tipado estricto de Rust previene errores
+### Server won't start
 
-## Soporte
+1. Verify binary exists: `ls target/release/escuela_api` (Linux/macOS) or `dir target\release\escuela_api.exe` (Windows)
+2. Check port availability: `netstat -tuln | grep 3000` (Linux/macOS) or `netstat -an | findstr :3000` (Windows)
+3. Review logs: Check console output or log files
+4. Verify file permissions
 
-Para problemas técnicos o preguntas sobre el despliegue:
-- Revisar los logs del servidor
-- Ejecutar el script con el comando `status` para diagnóstico
-- Verificar el reporte de integridad al iniciar
+### Database errors
+
+1. Verify `.db` file exists
+2. Check write permissions on directory
+3. Run integrity check on startup
+4. Check SQLite version compatibility
+
+### Storage issues
+
+1. Verify storage directory exists
+2. Check write permissions
+3. Verify available disk space
+4. Check file system integrity
+
+## Security
+
+- **SHA-256 Hashing**: Each file has a unique hash for integrity verification
+- **RBAC**: Role-Based Access Control (Director, HR, Administrator)
+- **Complete Audit Trail**: All actions are logged
+- **Compile-time Validation**: Rust's strict typing prevents errors
+- **JWT Authentication**: Secure token-based authentication
+- **Rate Limiting**: Protection against brute force attacks
+- **Input Validation**: All inputs are validated before processing
+
+## Backup and Recovery
+
+### Automated Backups
+
+The system includes automatic backup functionality. Configure backup schedule:
+
+```bash
+# Set backup interval in environment
+export BACKUP_INTERVAL_HOURS=24
+export BACKUP_RETENTION_DAYS=30
+```
+
+### Manual Backup
+
+```bash
+# Database backup
+cp escuela.db escuela_backup_$(date +%Y%m%d).db
+
+# Storage backup
+tar -czf storage_backup_$(date +%Y%m%d).tar.gz storage/
+```
+
+### Recovery
+
+```bash
+# Restore database
+cp escuela_backup_20240621.db escuela.db
+
+# Restore storage
+tar -xzf storage_backup_20240621.tar.gz
+```
+
+## Monitoring
+
+### Health Check
+
+```bash
+curl http://localhost:3000/health
+```
+
+Expected response:
+```json
+{
+  "status": "healthy",
+  "database": "connected",
+  "storage": "accessible"
+}
+```
+
+### Log Monitoring
+
+Monitor application logs for:
+- Error messages
+- Failed authentication attempts
+- Database connection issues
+- Storage problems
+
+## Performance Tuning
+
+### Database Optimization
+
+```sql
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_expedientes_cedula ON expedientes(cedula);
+CREATE INDEX IF NOT EXISTS idx_documentos_expediente_id ON documentos(expediente_id);
+CREATE INDEX IF NOT EXISTS idx_auditoria_usuario_id ON auditoria(usuario_id);
+```
+
+### Connection Pooling
+
+Adjust pool size in environment:
+
+```bash
+export DATABASE_POOL_SIZE=10
+```
+
+## Support
+
+For technical issues or deployment questions:
+- Review server logs
+- Run status script for diagnostics
+- Check integrity report on startup
+- Open GitHub issue for bugs
+
+---
+
+For additional information, see the main [README.md](README.md) and [ARCHITECTURE.md](ARCHITECTURE.md).

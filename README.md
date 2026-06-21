@@ -1,6 +1,23 @@
-# Sistema de Gestión Escolar - Tesis Universitaria
+# 🏫 Sistema de Gestión Escolar - Tesis Universitaria
 
-Sistema modular y extensible para la gestión integral de expedientes docentes y administrativos en instituciones educativas. Desarrollado en Rust con arquitectura limpia (Clean Architecture) y optimizado para portabilidad absoluta y bajo consumo de recursos.
+![Rust](https://img.shields.io/badge/Rust-1.75+-orange.svg)
+![License](https://img.shields.io/badge/License-MIT%20OR%20Apache--2.0-blue.svg)
+![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)
+![Architecture](https://img.shields.io/badge/Architecture-Clean%20Architecture-brightgreen.svg)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-success.svg)
+
+> Sistema modular y extensible para la gestión integral de expedientes docentes y administrativos en instituciones educativas. Desarrollado en Rust con arquitectura limpia (Clean Architecture) y optimizado para portabilidad absoluta y bajo consumo de recursos.
+
+## ✨ Características Destacadas
+
+- 🚀 **Alto Rendimiento**: Compilado con Rust para máxima velocidad y seguridad
+- 🏗️ **Clean Architecture**: Separación clara de responsabilidades con diseño modular
+- 🔒 **Seguridad Máxima**: Autenticación JWT, RBAC, y validación en tiempo de compilación
+- 📱 **Offline-First**: Funciona completamente sin conexión a internet
+- 🎯 **Portabilidad Absoluta**: Binario único sin dependencias externas
+- 🌐 **Multi-dispositivo**: Accesible desde cualquier PC en la red local
+- 📊 **Dashboard Inteligente**: Estadísticas en tiempo real y búsqueda avanzada
+- 🔧 **Panel Admin Completo**: Backup, exportación PDF, gestión de usuarios y más
 
 ## 🏗️ Arquitectura del Workspace
 
@@ -320,19 +337,75 @@ struct ExpedienteDocente {
 
 ## 🎯 Próximos Pasos
 
-- [ ] Implementar autenticación JWT
-- [ ] Agregar sistema de auditoría completo
-- [ ] Implementar búsqueda full-text con FTS5 de SQLite
-- [ ] Agregar interfaz web con React
-- [ ] Implementar exportación de expedientes a PDF
-- [ ] Agregar sistema de backups automáticos
+- [x] ✅ Implementar autenticación JWT
+- [x] ✅ Agregar sistema de auditoría completo
+- [x] ✅ Implementar búsqueda full-text con FTS5 de SQLite
+- [x] ✅ Agregar interfaz web moderna con JavaScript
+- [x] ✅ Implementar exportación de expedientes a PDF
+- [x] ✅ Agregar sistema de backups automáticos
+- [x] ✅ Implementar panel de administración completo
+- [x] ✅ Agregar dashboard de estadísticas
 - [ ] Implementar notificaciones por email
-- [ ] Agregar dashboard de estadísticas
+- [ ] Agregar modo multi-idioma
+- [ ] Implementar sincronización con nube (opcional)
+- [ ] Agregar tests de integración completos
+
+## 📸 Demo y Características de la Interfaz
+
+### Interfaz Principal
+
+El sistema cuenta con una interfaz web moderna y responsiva con:
+
+- **Dashboard Interactivo**: Estadísticas en tiempo real del sistema
+- **Gestión de Expedientes**: CRUD completo con búsqueda avanzada
+- **Gestión de Documentos**: Upload de archivos con drag-and-drop
+- **Panel de Administración**: Control total del sistema
+
+### Características de la Interfaz
+
+- 🎨 **Diseño Moderno**: Glassmorphism y animaciones suaves
+- 📱 **Responsive**: Funciona en desktop, tablet y móvil
+- ♿ **Accesible**: WCAG 2.1 AA compliant
+- ⌨️ **Atajos de Teclado**: Ctrl+K (buscar), Ctrl+N (nuevo), Escape (cerrar)
+- 🔍 **Búsqueda Inteligente**: Debouncing y navegación automática
+- ✅ **Validación en Tiempo Real**: Feedback visual inmediato
+
+### Panel de Administración
+
+Funcionalidades avanzadas para administradores:
+
+- 📦 **Backup Automático**: Copias de seguridad programadas
+- 📊 **Reportes PDF**: Exportación de datos a PDF
+- 👥 **Gestión de Usuarios**: Control de accesos y roles
+- 🔍 **Auditoría Completa**: Registro de todas las acciones
+- 🧹 **Mantenimiento**: Limpieza de caché y actualización de datos
+- 📋 **Listado Personal**: Exportación CSV de personal
+- 🗜️ **Backup Completo**: Descarga ZIP de todo el sistema
 
 ## 📄 Licencia
 
-MIT OR Apache-2.0
+Este proyecto está dual-licenciado bajo:
+
+- **MIT License** - Para uso comercial y proyectos de código abierto
+- **Apache License 2.0** - Para proyectos que requieren patentes
+
+Puedes elegir la licencia que mejor se adapte a tus necesidades.
 
 ## 👨‍💻 Autor
 
 Desarrollado como parte de tesis universitaria para gestión documental de instituciones educativas.
+
+## 🙏 Agradecimientos
+
+- **Rust Community** - Por el lenguaje y ecosistema increíble
+- **Axum Framework** - Por el framework web asíncrono y eficiente
+- **SQLite** - Por la base de datos embebida y portátil
+- **Lucide Icons** - Por los iconos modernos y ligeros
+
+## 📞 Soporte
+
+Para reportar bugs, sugerir mejoras o solicitar ayuda, por favor abre un issue en el repositorio.
+
+---
+
+**⭐ Si te gusta este proyecto, dale una estrella en GitHub!**
