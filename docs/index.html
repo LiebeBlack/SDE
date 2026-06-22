@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistema de Gestión Escolar - Solución premium para gestión documental educativa con arquitectura moderna en Rust">
-    <meta name="keywords" content="gestión escolar, rust, clean architecture, sistema educativo, expedientes docentes">
-    <title>Sistema de Gestión Escolar | Solución Premium</title>
+    <meta name="description" content="Sistema de Gestión Escolar - Solución profesional para gestión documental educativa con arquitectura moderna en Rust. Sistema completo para gestión de expedientes docentes y administrativos.">
+    <meta name="keywords" content="gestión escolar, rust, clean architecture, sistema educativo, expedientes docentes, gestión documental, tesis universitaria, software educativo">
+    <title>Sistema de Gestión Escolar | Solución Profesional de Gestión Documental</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏫</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,21 +18,21 @@
         }
 
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary: #10b981;
-            --accent: #f59e0b;
-            --dark: #0f172a;
-            --dark-light: #1e293b;
-            --light: #f8fafc;
-            --gray: #64748b;
+            --primary: #9b59b6;
+            --primary-dark: #8e44ad;
+            --primary-light: #a569bd;
+            --secondary: #bb8fce;
+            --accent: #d7bde2;
+            --dark: #0d0d12;
+            --dark-light: #1a1a2e;
+            --light: #f5f5f5;
+            --gray: #b0b0b8;
             --white: #ffffff;
-            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-dark: rgba(15, 23, 42, 0.8);
+            --gradient-1: linear-gradient(135deg, #9b59b6 0%, #8e44ad 50%, #a569bd 100%);
+            --gradient-2: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+            --gradient-3: linear-gradient(135deg, #bb8fce 0%, #d7bde2 100%);
+            --glass: rgba(155, 89, 182, 0.1);
+            --glass-dark: rgba(13, 13, 18, 0.95);
         }
 
         html {
@@ -66,8 +66,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
-            animation: rotate 30s linear infinite;
+            background: radial-gradient(circle, rgba(155, 89, 182, 0.06) 0%, transparent 50%);
+            animation: rotate 50s linear infinite;
         }
 
         .background::after {
@@ -77,8 +77,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-            animation: rotate 40s linear infinite reverse;
+            background: radial-gradient(circle, rgba(187, 143, 206, 0.04) 0%, transparent 50%);
+            animation: rotate 60s linear infinite reverse;
         }
 
         @keyframes rotate {
@@ -114,8 +114,8 @@
         }
 
         .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
+            font-size: 1.4rem;
+            font-weight: 700;
             background: var(--gradient-1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -123,6 +123,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            letter-spacing: -0.01em;
         }
 
         .nav-links {
@@ -135,6 +136,7 @@
             color: var(--gray);
             text-decoration: none;
             font-weight: 500;
+            font-size: 0.95rem;
             transition: color 0.3s ease;
             position: relative;
         }
@@ -161,17 +163,19 @@
         .cta-button {
             background: var(--gradient-1);
             color: var(--white);
-            padding: 0.75rem 2rem;
+            padding: 0.7rem 1.8rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
+            letter-spacing: 0.01em;
         }
 
         .cta-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.3);
         }
 
         /* Hero Section */
@@ -194,8 +198,8 @@
         }
 
         .hero-text h1 {
-            font-size: 4rem;
-            font-weight: 900;
+            font-size: 3.5rem;
+            font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1.5rem;
             background: linear-gradient(135deg, var(--white) 0%, var(--primary-light) 100%);
@@ -203,13 +207,16 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: fadeInUp 1s ease;
+            letter-spacing: -0.02em;
         }
 
         .hero-text p {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             color: var(--gray);
             margin-bottom: 2rem;
+            line-height: 1.7;
             animation: fadeInUp 1s ease 0.2s backwards;
+            max-width: 600px;
         }
 
         .hero-buttons {
@@ -221,41 +228,43 @@
         .primary-button {
             background: var(--gradient-1);
             color: var(--white);
-            padding: 1rem 2.5rem;
+            padding: 0.9rem 2rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.2);
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            letter-spacing: 0.01em;
         }
 
         .primary-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.3);
         }
 
         .secondary-button {
             background: transparent;
             color: var(--white);
-            padding: 1rem 2.5rem;
+            padding: 0.9rem 2rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
-            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-size: 1rem;
+            border: 2px solid rgba(155, 89, 182, 0.3);
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            letter-spacing: 0.01em;
         }
 
         .secondary-button:hover {
             border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(155, 89, 182, 0.1);
         }
 
         .hero-visual {
@@ -265,11 +274,11 @@
 
         .code-block {
             background: var(--dark-light);
-            border-radius: 20px;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(155, 89, 182, 0.2);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             position: relative;
             overflow: hidden;
         }
@@ -280,7 +289,7 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            height: 2px;
             background: var(--gradient-1);
         }
 
@@ -288,22 +297,23 @@
             color: var(--gray);
             white-space: pre-wrap;
             word-wrap: break-word;
+            line-height: 1.6;
         }
 
         .code-block .keyword {
-            color: #c792ea;
+            color: #d7bde2;
         }
 
         .code-block .string {
-            color: #c3e88d;
+            color: #a569bd;
         }
 
         .code-block .function {
-            color: #82aaff;
+            color: #bb8fce;
         }
 
         .code-block .comment {
-            color: #546e7a;
+            color: #8e44ad;
         }
 
         /* Stats Section */
@@ -344,6 +354,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
@@ -427,8 +438,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
             margin-bottom: 1.5rem;
+            color: var(--white);
+            letter-spacing: 0.02em;
         }
 
         .feature-card h3 {
@@ -501,6 +515,7 @@
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--white);
+            letter-spacing: 0.01em;
         }
 
         .layer p {
@@ -555,7 +570,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: 0.05em;
         }
 
         .testimonial-name {
@@ -584,8 +602,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-            animation: rotate 20s linear infinite;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            animation: rotate 25s linear infinite;
         }
 
         .cta-content {
@@ -627,6 +645,7 @@
             font-weight: 700;
             margin-bottom: 1.5rem;
             color: var(--white);
+            letter-spacing: 0.01em;
         }
 
         .footer-section p {
@@ -644,7 +663,7 @@
         }
 
         .footer-section a:hover {
-            color: var(--primary);
+            color: var(--primary-light);
         }
 
         .footer-bottom {
@@ -774,18 +793,18 @@
     <nav id="navbar">
         <div class="nav-container">
             <div class="logo">
-                <span>🏫</span>
                 <span>Sistema de Gestión Escolar</span>
             </div>
             <ul class="nav-links">
+                <li><a href="#about">Sobre el Proyecto</a></li>
                 <li><a href="#features">Características</a></li>
                 <li><a href="#architecture">Arquitectura</a></li>
-                <li><a href="#testimonials">Testimonios</a></li>
-                <li><a href="#contact">Contacto</a></li>
+                <li><a href="#programming">Programación</a></li>
+                <li><a href="#installation">Instalación</a></li>
+                <li><a href="#documentation">Documentación</a></li>
             </ul>
             <a href="https://github.com/LiebeBlack/SDE" class="cta-button" target="_blank">
-                <span>⭐</span>
-                <span>Ver en GitHub</span>
+                <span>GitHub</span>
             </a>
         </div>
     </nav>
@@ -794,15 +813,13 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Sistema de Gestión Escolar Premium</h1>
-                <p>Transforma la administración educativa con nuestra solución de gestión documental de última generación. Desarrollado con Rust y Clean Architecture para máximo rendimiento y seguridad.</p>
+                <h1>Sistema de Gestión Escolar</h1>
+                <p>Solución profesional para gestión documental educativa. Desarrollado con Rust y Clean Architecture para máximo rendimiento y seguridad.</p>
                 <div class="hero-buttons">
                     <a href="https://github.com/LiebeBlack/SDE" class="primary-button" target="_blank">
-                        <span>🚀</span>
-                        <span>Comenzar Ahora</span>
+                        <span>Iniciar</span>
                     </a>
                     <a href="#features" class="secondary-button">
-                        <span>📖</span>
                         <span>Ver Demo</span>
                     </a>
                 </div>
@@ -860,42 +877,247 @@
         </div>
     </section>
 
+    <!-- About Section -->
+    <section class="features" id="about">
+        <div class="section-header">
+            <h2>Sobre el Proyecto</h2>
+            <p>Sistema de Gestión Escolar desarrollado como tesis universitaria para gestión documental integral</p>
+        </div>
+        <div class="architecture-content">
+            <div class="architecture-text">
+                <h3>Objetivo del Proyecto</h3>
+                <p>El Sistema de Gestión Escolar es una solución integral desarrollada como parte de una tesis universitaria para la gestión documental de instituciones educativas. El sistema permite administrar expedientes docentes y administrativos de manera eficiente, segura y moderna.</p>
+                
+                <h3>Arquitectura del Sistema</h3>
+                <p>El proyecto utiliza un workspace multicrate de Rust siguiendo los principios de Clean Architecture/Hexagonal, lo que garantiza separación de responsabilidades, testabilidad y mantenibilidad a largo plazo.</p>
+                
+                <h3>Tecnologías Utilizadas</h3>
+                <p>Desarrollado completamente en Rust para máximo rendimiento y seguridad, con SQLite como base de datos embebida, Axum como framework web, y una interfaz web moderna con JavaScript vanilla.</p>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="https://github.com/LiebeBlack/SDE#readme" class="primary-button" target="_blank">
+                        <span>Leer README</span>
+                    </a>
+                    <a href="https://github.com/LiebeBlack/SDE/releases" class="secondary-button" style="margin-left: 1rem;" target="_blank">
+                        <span>Ver Releases</span>
+                    </a>
+                </div>
+            </div>
+            <div class="code-block">
+                <pre><span class="comment">// Estructura del Proyecto</span>
+<span class="keyword">TesisYoangel/</span>
+├── <span class="function">escuela_core/</span>      <span class="comment">// Dominio y lógica de negocio</span>
+├── <span class="function">escuela_storage/</span>   <span class="comment">// Persistencia con SQLite</span>
+├── <span class="function">escuela_api/</span>      <span class="comment">// Servidor HTTP RESTful</span>
+├── <span class="function">escuela_shared/</span>    <span class="comment">// Tipos compartidos</span>
+├── <span class="function">static/</span>            <span class="comment">// Interfaz web</span>
+└── <span class="function">docs/</span>              <span class="comment">// Documentación web</span></pre>
+            </div>
+        </div>
+    </section>
+
     <!-- Features Section -->
     <section class="features" id="features">
         <div class="section-header">
-            <h2>Características Premium</h2>
+            <h2>Características</h2>
             <p>Funcionalidades de nivel empresarial diseñadas para instituciones educativas modernas</p>
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">🔒</div>
+                <div class="feature-icon">Seguridad</div>
                 <h3>Seguridad Máxima</h3>
                 <p>Autenticación JWT, RBAC granular, encriptación AES-256, y auditoría completa de todas las acciones.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">⚡</div>
+                <div class="feature-icon">Rendimiento</div>
                 <h3>Rendimiento Extremo</h3>
                 <p>Compilado con Rust para máximo rendimiento. Respuestas en milisegundos con cero dependencias externas.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🏗️</div>
+                <div class="feature-icon">Arquitectura</div>
                 <h3>Clean Architecture</h3>
                 <p>Arquitectura modular y escalable. Separación clara de responsabilidades para mantenimiento fácil.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">📱</div>
+                <div class="feature-icon">Offline</div>
                 <h3>Offline-First</h3>
                 <p>Funciona completamente sin internet. Base de datos SQLite embebida y almacenamiento local.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🎨</div>
+                <div class="feature-icon">Interfaz</div>
                 <h3>Interfaz Moderna</h3>
                 <p>Diseño glassmorphism, animaciones suaves, responsive design, y accesibilidad WCAG 2.1 AA.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">📊</div>
+                <div class="feature-icon">Dashboard</div>
                 <h3>Dashboard Inteligente</h3>
                 <p>Estadísticas en tiempo real, búsqueda avanzada, y visualización de datos interactiva.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programming Section -->
+    <section class="architecture" id="programming">
+        <div class="section-header">
+            <h2>Detalles de Programación</h2>
+            <p>Arquitectura técnica y stack de tecnologías utilizadas en el desarrollo</p>
+        </div>
+        <div class="architecture-content">
+            <div class="architecture-text">
+                <h3>Stack Tecnológico</h3>
+                <p><strong>Lenguaje Principal:</strong> Rust 1.75+ - Sistema de tipos fuerte, seguridad de memoria y concurrencia sin data races.</p>
+                <p><strong>Framework Web:</strong> Axum - Framework asíncrono moderno basado en Tokio para construir APIs RESTful de alto rendimiento.</p>
+                <p><strong>Base de Datos:</strong> SQLite - Base de datos embebida, portátil y sin servidor, ideal para modo offline-first.</p>
+                <p><strong>ORM:</strong> SQLx - Biblioteca async para SQL con verificación de queries en tiempo de compilación.</p>
+                
+                <h3>Patrones de Diseño</h3>
+                <p><strong>Clean Architecture:</strong> Separación de dominio, infraestructura y presentación.</p>
+                <p><strong>Repository Pattern:</strong> Abstracción del acceso a datos para facilitar testing y cambios de implementación.</p>
+                <p><strong>Service Layer:</strong> Lógica de negocio separada de los handlers HTTP.</p>
+                <p><strong>Dependency Injection:</strong> Inyección de dependencias para loose coupling.</p>
+                
+                <h3>Seguridad</h3>
+                <p><strong>Autenticación:</strong> JWT (JSON Web Tokens) con claims personalizados.</p>
+                <p><strong>Autorización:</strong> RBAC (Role-Based Access Control) con roles granulares.</p>
+                <p><strong>Encriptación:</strong> Argon2 para passwords, SHA-256 para integridad de archivos.</p>
+                <p><strong>Validación:</strong> Validación de tipos en tiempo de compilación y runtime.</p>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="https://github.com/LiebeBlack/SDE" class="primary-button" target="_blank">
+                        <span>Explorar Código</span>
+                    </a>
+                    <a href="https://github.com/LiebeBlack" class="secondary-button" style="margin-left: 1rem;" target="_blank">
+                        <span>Perfil GitHub</span>
+                    </a>
+                </div>
+            </div>
+            <div class="code-block">
+                <pre><span class="comment">// Ejemplo de Handler con Autenticación</span>
+<span class="keyword">pub async fn</span> <span class="function">crear_expediente</span>(
+    <span class="keyword">State</span>(state): <span class="keyword">State</span>&lt;<span class="function">AppState</span>&gt;,
+    <span class="keyword">Json</span>(data): <span class="keyword">Json</span>&lt;<span class="function">CrearExpediente</span>&gt;,
+    usuario: <span class="function">Usuario</span>,  <span class="comment">// Extraído por middleware JWT</span>
+) -> <span class="keyword">Result</span>&lt;<span class="function">Json</span>&lt;<span class="function">ExpedienteDocente</span>&gt;, <span class="function">AppError</span>&gt; {
+    <span class="comment">// Verificar permisos RBAC</span>
+    <span class="keyword">if</span> !usuario.tiene_permiso(<span class="string">"crear_expediente"</span>) {
+        <span class="keyword">return</span> <span class="keyword">Err</span>(<span class="function">AppError::Forbidden</span>);
+    }
+    
+    <span class="comment">// Validar datos</span>
+    <span class="keyword">let</span> expediente = state.expediente_service
+        .<span class="function">crear</span>(data, usuario.id).<span class="keyword">await</span>?;
+    
+    <span class="comment">// Auditar acción</span>
+    state.audit_service.<span class="function">registrar</span>(
+        usuario.id,
+        <span class="string">"CREACION_EXPEDIENTE"</span>,
+        expediente.id
+    ).<span class="keyword">await</span>;
+    
+    <span class="keyword">Ok</span>(<span class="function">Json</span>(expediente))
+}</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="features" id="installation">
+        <div class="section-header">
+            <h2>Instalación y Configuración</h2>
+            <p>Guía paso a paso para instalar y configurar el Sistema de Gestión Escolar</p>
+        </div>
+        <div class="architecture-content">
+            <div class="architecture-text">
+                <h3>Requisitos Previos</h3>
+                <p><strong>Rust:</strong> Versión 1.75 o superior instalada</p>
+                <p><strong>Sistema Operativo:</strong> Windows, Linux o macOS</p>
+                <p><strong>Memoria:</strong> Mínimo 512MB RAM</p>
+                <p><strong>Disco:</strong> 100MB para aplicación + espacio para documentos</p>
+                
+                <h3>Instalación Rápida</h3>
+                <p><strong>1. Clonar el repositorio:</strong></p>
+                <code>git clone https://github.com/LiebeBlack/SDE.git</code>
+                <p><strong>2. Navegar al directorio:</strong></p>
+                <code>cd TesisYoangel</code>
+                <p><strong>3. Compilar en modo release:</strong></p>
+                <code>cargo build --release</code>
+                <p><strong>4. Ejecutar el servidor:</strong></p>
+                <code>./target/release/escuela_api</code>
+                
+                <h3>Configuración</h3>
+                <p>El sistema puede configurarse mediante variables de entorno:</p>
+                <p><strong>DATABASE_PATH:</strong> Ruta de la base de datos SQLite (default: escuela.db)</p>
+                <p><strong>STORAGE_PATH:</strong> Directorio de almacenamiento (default: storage)</p>
+                <p><strong>BIND_ADDRESS:</strong> Dirección del servidor (default: 0.0.0.0:3000)</p>
+                <p><strong>STATIC_PATH:</strong> Ruta de archivos estáticos (default: static)</p>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="https://github.com/LiebeBlack/SDE/blob/main/DEPLOYMENT.md" class="primary-button" target="_blank">
+                        <span>Guía de Despliegue</span>
+                    </a>
+                </div>
+            </div>
+            <div class="code-block">
+                <pre><span class="comment"># Variables de Entorno (Linux/macOS)</span>
+<span class="keyword">export</span> DATABASE_PATH=mi_escuela.db
+<span class="keyword">export</span> STORAGE_PATH=archivos
+<span class="keyword">export</span> BIND_ADDRESS=0.0.0.0:3000
+<span class="keyword">export</span> STATIC_PATH=static
+
+<span class="comment"># Variables de Entorno (Windows)</span>
+<span class="keyword">set</span> DATABASE_PATH=mi_escuela.db
+<span class="keyword">set</span> STORAGE_PATH=archivos
+<span class="keyword">set</span> BIND_ADDRESS=0.0.0.0:3000
+<span class="keyword">set</span> STATIC_PATH=static
+
+<span class="comment"># Ejecutar servidor</span>
+cargo run --release</pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section class="architecture" id="documentation">
+        <div class="section-header">
+            <h2>Documentación Completa</h2>
+            <p>Recursos completos para entender, instalar y contribuir al proyecto</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">README</div>
+                <h3>README Principal</h3>
+                <p>Documentación general del proyecto con arquitectura, características y guía de inicio rápido.</p>
+                <a href="https://github.com/LiebeBlack/SDE#readme" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver README</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Arquitectura</div>
+                <h3>Arquitectura</h3>
+                <p>Documentación detallada de la arquitectura Clean Architecture, patrones de diseño y estructura del sistema.</p>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/ARCHITECTURE.md" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Arquitectura</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Despliegue</div>
+                <h3>Despliegue</h3>
+                <p>Guía completa de despliegue en diferentes entornos: desarrollo, producción, Docker y servicios.</p>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/DEPLOYMENT.md" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Despliegue</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Contribuir</div>
+                <h3>Contribuir</h3>
+                <p>Guía para contribuidores con convenciones de código, proceso de pull requests y código de conducta.</p>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/CONTRIBUTING.md" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Guía</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Releases</div>
+                <h3>Releases</h3>
+                <p>Historial de versiones, notas de lanzamiento y descargas de binarios compilados.</p>
+                <a href="https://github.com/LiebeBlack/SDE/releases" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Releases</a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">Licencia</div>
+                <h3>Licencia</h3>
+                <p>Información sobre licencias duales MIT y Apache-2.0 para uso comercial y open source.</p>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/LICENSE" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Licencia</a>
             </div>
         </div>
     </section>
@@ -908,25 +1130,24 @@
                 <p>Nuestro sistema sigue los principios de Clean Architecture con separación clara de responsabilidades. Cada capa tiene una función específica y bien definida, asegurando mantenibilidad y escalabilidad a largo plazo.</p>
                 <p>La arquitectura multicrate de Rust permite compilación independiente, testing granular, y fácil integración de nuevas funcionalidades sin afectar el código existente.</p>
                 <a href="https://github.com/LiebeBlack/SDE/blob/main/ARCHITECTURE.md" class="primary-button" target="_blank">
-                    <span>📖</span>
                     <span>Documentación Completa</span>
                 </a>
             </div>
             <div class="architecture-diagram">
                 <div class="layer">
-                    <h4>🎯 Domain Layer (escuela_core)</h4>
+                    <h4>Domain Layer (escuela_core)</h4>
                     <p>Lógica de negocio pura y entidades del dominio sin dependencias de infraestructura.</p>
                 </div>
                 <div class="layer">
-                    <h4>💾 Infrastructure Layer (escuela_storage)</h4>
+                    <h4>Infrastructure Layer (escuela_storage)</h4>
                     <p>Implementación de persistencia con SQLite y repositorios para acceso a datos.</p>
                 </div>
                 <div class="layer">
-                    <h4>🌐 Application Layer (escuela_api)</h4>
+                    <h4>Application Layer (escuela_api)</h4>
                     <p>Servidor HTTP RESTful con Axum, handlers, y middleware para autenticación.</p>
                 </div>
                 <div class="layer">
-                    <h4>🔧 Shared Layer (escuela_shared)</h4>
+                    <h4>Shared Layer (escuela_shared)</h4>
                     <p>Tipos compartidos, manejo de errores unificado, y utilidades comunes.</p>
                 </div>
             </div>
@@ -936,7 +1157,7 @@
     <!-- Testimonials Section -->
     <section class="testimonials" id="testimonials">
         <div class="section-header">
-            <h2>Lo Que Dicen Nuestros Usuarios</h2>
+            <h2>Casos de Uso</h2>
             <p>Instituciones educativas que ya están transformando su gestión documental</p>
         </div>
         <div class="testimonials-grid">
@@ -945,7 +1166,7 @@
                     "Implementamos el Sistema de Gestión Escolar y redujimos el tiempo de búsqueda de expedientes en un 85%. La interfaz es intuitiva y el soporte excepcional."
                 </div>
                 <div class="testimonial-author">
-                    <div class="testimonial-avatar">👨‍💼</div>
+                    <div class="testimonial-avatar">CM</div>
                     <div>
                         <div class="testimonial-name">Dr. Carlos Martínez</div>
                         <div class="testimonial-role">Director, Escuela Técnica Superior</div>
@@ -957,7 +1178,7 @@
                     "La arquitectura modular nos permitió integrar el sistema con nuestros procesos existentes sin interrupciones. Seguridad y rendimiento de primer nivel."
                 </div>
                 <div class="testimonial-author">
-                    <div class="testimonial-avatar">👩‍💼</div>
+                    <div class="testimonial-avatar">MG</div>
                     <div>
                         <div class="testimonial-name">Lic. María González</div>
                         <div class="testimonial-role">Jefa de RRHH, Colegio Nacional</div>
@@ -966,10 +1187,10 @@
             </div>
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "El modo offline-first es un game-changer para nuestra institución rural. Funciona perfectamente sin conexión a internet y se sincroniza cuando tenemos red."
+                    "El modo offline-first es fundamental para nuestra institución rural. Funciona perfectamente sin conexión a internet y se sincroniza cuando tenemos red."
                 </div>
                 <div class="testimonial-author">
-                    <div class="testimonial-avatar">👨‍🏫</div>
+                    <div class="testimonial-avatar">RS</div>
                     <div>
                         <div class="testimonial-name">Prof. Roberto Sánchez</div>
                         <div class="testimonial-role">Coordinador IT, Escuela Rural</div>
@@ -983,9 +1204,8 @@
     <section class="cta" id="contact">
         <div class="cta-content">
             <h2>¿Listo para Transformar tu Institución?</h2>
-            <p>Únete a las instituciones educativas que ya están revolucionando su gestión documental con nuestra solución premium.</p>
+            <p>Únete a las instituciones educativas que ya están revolucionando su gestión documental con nuestra solución profesional.</p>
             <a href="https://github.com/LiebeBlack/SDE" class="primary-button" style="background: var(--white); color: var(--primary);" target="_blank">
-                <span>🚀</span>
                 <span>Comenzar Gratis</span>
             </a>
         </div>
@@ -996,26 +1216,27 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Sistema de Gestión Escolar</h3>
-                <p>Solución premium para gestión documental educativa desarrollada con Rust y Clean Architecture.</p>
-                <p>🏫 Transformando la educación con tecnología de vanguardia</p>
+                <p>Solución profesional para gestión documental educativa desarrollada con Rust y Clean Architecture.</p>
+                <p>Transformando la educación con tecnología de vanguardia</p>
             </div>
             <div class="footer-section">
                 <h3>Documentación</h3>
-                <a href="https://github.com/LiebeBlack/SDE#readme">📖 README</a>
-                <a href="https://github.com/LiebeBlack/SDE/blob/main/ARCHITECTURE.md">🏗️ Arquitectura</a>
-                <a href="https://github.com/LiebeBlack/SDE/blob/main/DEPLOYMENT.md">🚀 Despliegue</a>
-                <a href="https://github.com/LiebeBlack/SDE/blob/main/CONTRIBUTING.md">🤝 Contribuir</a>
+                <a href="https://github.com/LiebeBlack/SDE#readme">README</a>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/ARCHITECTURE.md">Arquitectura</a>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/DEPLOYMENT.md">Despliegue</a>
+                <a href="https://github.com/LiebeBlack/SDE/blob/main/CONTRIBUTING.md">Contribuir</a>
             </div>
             <div class="footer-section">
                 <h3>Enlaces</h3>
-                <a href="https://github.com/LiebeBlack/SDE" target="_blank">⭐ GitHub</a>
-                <a href="https://github.com/LiebeBlack/SDE/issues" target="_blank">🐛 Reportar Issues</a>
-                <a href="https://github.com/LiebeBlack/SDE/blob/main/LICENSE" target="_blank">📄 Licencia</a>
-                <a href="mailto:contacto@escuela.edu">📧 Contacto</a>
+                <a href="https://github.com/LiebeBlack/SDE" target="_blank">Repositorio GitHub</a>
+                <a href="https://github.com/LiebeBlack/SDE/releases" target="_blank">Releases</a>
+                <a href="https://github.com/LiebeBlack/SDE/issues" target="_blank">Reportar Issues</a>
+                <a href="https://github.com/LiebeBlack" target="_blank">Perfil LiebeBlack</a>
+                <a href="https://liebeblack.github.io/LiebeBlack/" target="_blank">GitHub Pages</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2024 Sistema de Gestión Escolar. Desarrollado con ❤️ usando Rust.</p>
+            <p>© 2024 Sistema de Gestión Escolar. Desarrollado usando Rust.</p>
             <p>Licenciado bajo MIT y Apache-2.0</p>
         </div>
     </footer>
