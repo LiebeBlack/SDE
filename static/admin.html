@@ -202,11 +202,11 @@
         <form id="admin-login-form" novalidate>
             <div class="field">
                 <label for="login-cedula">Cédula</label>
-                <input type="text" id="login-cedula" name="cedula" value="V-00000000" autocomplete="username">
+                <input type="text" id="login-cedula" name="cedula" placeholder="V-00000000" autocomplete="username">
             </div>
             <div class="field">
                 <label for="login-pass">Contraseña</label>
-                <input type="password" id="login-pass" name="password" value="SuperAdmin2026!" autocomplete="current-password">
+                <input type="password" id="login-pass" name="password" placeholder="••••••••" autocomplete="current-password">
             </div>
             <button type="submit" class="btn btn-primary">Entrar al panel</button>
         </form>
@@ -375,7 +375,7 @@
         const cedula = document.getElementById('login-cedula').value;
         const password = document.getElementById('login-pass').value;
         try {
-            const res = await fetch('/login', {
+            const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ cedula, password })
@@ -387,7 +387,7 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app').classList.add('visible');
             document.getElementById('user-name').textContent = `${USER.nombre} ${USER.apellido}`;
-            document.getElementById('user-role').textContent = USER.rol;
+            document.getElementById('user-role').textContent = USER.rol.charAt(0).toUpperCase() + USER.rol.slice(1);
             loadAll();
         } catch (e) {
             toast(e.message, false);
@@ -417,15 +417,16 @@
                 <thead><tr><th>Cédula</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Último acceso</th></tr></thead>
                 <tbody>`;
             users.forEach(u => {
-                const rolClass = u.rol === 'Super' ? 'super' : u.rol === 'Director' ? 'director' :
-                    u.rol === 'RecursosHumanos' ? 'rrhh' : 'admin';
+                const rolClass = u.rol === 'super' ? 'super' : u.rol === 'director' ? 'director' :
+                    u.rol === 'recursos_humanos' ? 'rrhh' : 'admin';
                 const statusClass = u.activo ? 'active' : 'inactive';
                 const acceso = u.ultimo_acceso ? new Date(u.ultimo_acceso).toLocaleString('es-VE') : 'Nunca';
+                const rolDisplay = u.rol.charAt(0).toUpperCase() + u.rol.slice(1).replace('_', ' ');
                 html += `<tr>
                     <td><strong>${u.cedula}</strong></td>
                     <td>${u.nombre} ${u.apellido}</td>
                     <td style="color:var(--text-dim)">${u.email}</td>
-                    <td><span class="badge ${rolClass}">${u.rol}</span></td>
+                    <td><span class="badge ${rolClass}">${rolDisplay}</span></td>
                     <td><span class="badge ${statusClass}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
                     <td style="color:var(--text-dim);font-size:0.78rem">${acceso}</td>
                 </tr>`;

@@ -188,6 +188,7 @@
             justify-content: center;
             padding: 8rem 3rem 4rem;
             position: relative;
+            text-align: center;
         }
 
         .hero-content {
@@ -197,6 +198,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
+            justify-content: center;
         }
 
         .hero-text h1 {
@@ -225,6 +227,7 @@
             display: flex;
             gap: 1rem;
             animation: fadeInUp 1s ease 0.4s backwards;
+            justify-content: center;
         }
 
         .primary-button {
@@ -323,9 +326,10 @@
         /* Stats Section */
         .stats {
             padding: 4rem 3rem;
-            background: var(--dark-light);
-            border-top: 1px solid rgba(155, 89, 182, 0.15);
-            border-bottom: 1px solid rgba(155, 89, 182, 0.15);
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            text-align: center;
+            background: none;
         }
 
         .stats-container {
@@ -334,6 +338,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
+            justify-content: center;
         }
 
         .stat-card {
@@ -375,11 +380,15 @@
         .features {
             padding: 8rem 3rem;
             position: relative;
+            text-align: center;
+            background: none;
         }
 
         .section-header {
             text-align: center;
             margin-bottom: 4rem;
+            background: none;
+            padding: 0;
         }
 
         .section-header h2 {
@@ -407,6 +416,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
+            justify-content: center;
         }
 
         .feature-card {
@@ -465,6 +475,10 @@
             margin-bottom: 1rem;
             letter-spacing: -0.01em;
             color: var(--white);
+            background: linear-gradient(135deg, var(--white) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .feature-card p {
@@ -476,8 +490,9 @@
         /* Architecture Section */
         .architecture {
             padding: 8rem 3rem;
-            background: var(--dark-light);
             position: relative;
+            text-align: center;
+            background: none;
         }
 
         .architecture-content {
@@ -487,6 +502,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
+            justify-content: center;
         }
 
         .architecture-text h2 {
@@ -548,6 +564,10 @@
             margin-bottom: 0.5rem;
             color: var(--white);
             letter-spacing: 0.01em;
+            background: linear-gradient(135deg, var(--white) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .layer p {
@@ -559,6 +579,8 @@
         /* Testimonials Section */
         .testimonials {
             padding: 8rem 3rem;
+            text-align: center;
+            background: none;
         }
 
         .testimonials-grid {
@@ -567,6 +589,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
+            justify-content: center;
         }
 
         .testimonial-card {
@@ -618,6 +641,10 @@
             font-weight: 600;
             color: var(--white);
             font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--white) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .testimonial-role {
@@ -657,6 +684,10 @@
             font-weight: 800;
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--white) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .cta p {
@@ -680,14 +711,18 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 3rem;
+            justify-content: center;
         }
 
         .footer-section h3 {
             font-size: 1.15rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
-            color: var(--white);
             letter-spacing: 0.01em;
+            background: linear-gradient(135deg, var(--white) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .footer-section p {

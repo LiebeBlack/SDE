@@ -148,12 +148,6 @@ class App {
                 }
             }
             
-            // Detectar credenciales de Super Admin y redirigir a admin.html sin autenticar
-            if (cedula === 'V-00000000' || cedula === 'V-00000000') {
-                window.location.href = '/admin.html';
-                return;
-            }
-            
             UI.setButtonLoading(btn, true);
             
             try {
