@@ -11,6 +11,7 @@ use escuela_core::security::crypto::verify_password;
 use crate::state::AppState;
 use std::time::{SystemTime, UNIX_EPOCH};
 use escuela_storage::audit::AccionAuditoria;
+use tracing::{warn, info};
 
 #[derive(Debug, Deserialize)]
 pub struct LoginRequest {
@@ -62,17 +63,46 @@ pub async fn login(
         .and_then(|v| v.to_str().ok())
         .map(|s| s.to_string());
 
+    // Validar longitud de inputs para prevenir ataques
+    if req.cedula.len() > 50 || req.password.len() > 200 {
+        warn!("Intento de login con inputs anormalmente largos desde IP: {:?}", ip_address);
+        let _ = state.audit_service.registrar_accion(
+            None,
+            AccionAuditoria::LoginFallido,
+            "Intento de login con inputs anormalmente largos".to_string(),
+            ip_address.clone(),
+            user_agent.clone(),
+        ).await;
+        return Err(AppError::AuthenticationError("Credenciales inválidas".to_string()));
+    }
+
+    // Rate limiting mejorado con bloqueo progresivo
     let rate_limit_key = ip_address.clone().unwrap_or_else(|| req.cedula.clone());
     
-    // Validar rate limit
     {
-        let mut attempts = state.login_attempts.lock().unwrap();
+        let mut attempts = state.login_attempts.lock().map_err(|_| AppError::InternalError("Error al obtener lock de intentos de login".to_string()))?;
         let now = chrono::Utc::now();
+        
+        // Limpiar intentos antiguos (más de 15 minutos)
         attempts.retain(|_, (_, timestamp)| now.signed_duration_since(*timestamp).num_minutes() < 15);
         
-        if let Some((count, _)) = attempts.get(&rate_limit_key) {
-            if *count >= 5 {
-                return Err(AppError::AuthenticationError("Demasiados intentos fallidos. Intente nuevamente en 15 minutos.".to_string()));
+        if let Some((count, timestamp)) = attempts.get(&rate_limit_key) {
+            let minutes_since_last = now.signed_duration_since(*timestamp).num_minutes();
+            
+            // Bloqueo progresivo: más intentos = bloqueo más largo
+            let block_duration = match *count {
+                5..=7 => 15,   // 15 minutos
+                8..=10 => 30,  // 30 minutos
+                11..=15 => 60, // 1 hora
+                _ => 120,      // 2 horas para casos extremos
+            };
+            
+            if minutes_since_last < block_duration {
+                warn!("IP bloqueada temporalmente por rate limiting: {:?} (intentos: {}, bloqueo: {} min)", ip_address, count, block_duration);
+                return Err(AppError::AuthenticationError(format!(
+                    "Demasiados intentos fallidos. Intente nuevamente en {} minutos.",
+                    block_duration - minutes_since_last
+                )));
             }
         }
     }
@@ -98,9 +128,14 @@ pub async fn login(
             ).await;
             
             let mut attempts = state.login_attempts.lock().map_err(|_| AppError::InternalError("Error al obtener lock de intentos de login".to_string()))?;
-            let entry = attempts.entry(rate_limit_key).or_insert((0, chrono::Utc::now()));
+            let entry = attempts.entry(rate_limit_key.clone()).or_insert((0, chrono::Utc::now()));
             entry.0 += 1;
             entry.1 = chrono::Utc::now();
+            
+            // Alertar si hay demasiados intentos desde la misma IP
+            if entry.0 >= 3 {
+                warn!("Múltiples intentos fallidos desde IP: {:?} (intentos: {})", ip_address, entry.0);
+            }
             
             return Err(AppError::AuthenticationError("Credenciales inválidas".to_string()));
         }
@@ -127,10 +162,15 @@ pub async fn login(
             user_agent.clone(),
         ).await;
         
-        let mut attempts = state.login_attempts.lock().unwrap();
-        let entry = attempts.entry(rate_limit_key).or_insert((0, chrono::Utc::now()));
+        let mut attempts = state.login_attempts.lock().map_err(|_| AppError::InternalError("Error al obtener lock de intentos de login".to_string()))?;
+        let entry = attempts.entry(rate_limit_key.clone()).or_insert((0, chrono::Utc::now()));
         entry.0 += 1;
         entry.1 = chrono::Utc::now();
+        
+        // Alertar si hay demasiados intentos fallidos
+        if entry.0 >= 3 {
+            warn!("Múltiples intentos fallidos para usuario: {} (intentos: {})", req.cedula, entry.0);
+        }
         
         return Err(AppError::AuthenticationError("Credenciales inválidas".to_string()));
     }
@@ -170,6 +210,8 @@ pub async fn login(
         ip_address,
         user_agent,
     ).await;
+
+    info!("Login exitoso para usuario: {}", req.cedula);
 
     let response = LoginResponse {
         token,

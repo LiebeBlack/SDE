@@ -17,3 +17,7 @@ serde = { workspace = true }
 uuid = { workspace = true }
 escuela_core = { path = "../escuela_core" }
 escuela_shared = { path = "../escuela_shared" }
+async-trait = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

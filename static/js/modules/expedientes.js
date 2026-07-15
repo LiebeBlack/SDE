@@ -165,7 +165,7 @@ export class ExpedientesManager {
             html += `
                 <tr>
                     <td><strong>${exp.cedula}</strong></td>
-                    <td>${exp.nombre} ${exp.apellido}</td>
+                    <td>${exp.nombres} ${exp.apellidos}</td>
                     <td>${date}</td>
                     <td><span class="badge ${badgeClass}">${exp.estado}</span></td>
                     <td>
@@ -201,7 +201,7 @@ export class ExpedientesManager {
         try {
             const exp = await ApiClient.getExpedienteDetails(id);
             // el endpoint devuelve el objeto directo
-            document.getElementById('det-nombres').textContent = `${exp.nombre} ${exp.apellido}`;
+            document.getElementById('det-nombres').textContent = `${exp.nombres} ${exp.apellidos}`;
             document.getElementById('det-cedula').textContent = exp.cedula;
             document.getElementById('det-email').textContent = exp.email;
             document.getElementById('det-estado').value = exp.estado;

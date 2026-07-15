@@ -274,6 +274,10 @@ export class ApiClient {
         return this.request(`/expedientes/buscar/${encodeURIComponent(term)}`);
     }
 
+    static async getExpedientePorCedula(cedula) {
+        return this.request(`/expedientes/cedula/${encodeURIComponent(cedula)}`);
+    }
+
     static async updateEstadoExpediente(id, nuevoEstado) {
         return this.request(`/expedientes/${id}/estado`, {
             method: 'POST',

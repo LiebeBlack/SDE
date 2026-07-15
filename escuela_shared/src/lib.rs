@@ -5,9 +5,11 @@ use serde::{Deserialize, Serialize};
 
 pub mod error;
 pub mod validation;
+pub mod sanitization;
 
 pub use error::{AppError, AppResult};
 pub use validation::validate_email;
+pub use sanitization::{sanitize_string, sanitize_name, sanitize_cedula, sanitize_email, sanitize_text, sanitize_and_validate, InputType, detect_sql_injection, detect_xss};
 
 /// Tipo valor para representar un email validado
 /// Garantiza que el email cumple con el formato válido mediante validación en tiempo de construcción

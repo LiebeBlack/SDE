@@ -12,3 +12,4 @@ chrono = { workspace = true }
 uuid = { workspace = true }
 thiserror = { workspace = true }
 axum = { workspace = true }
+unicode-normalization = "0.1"

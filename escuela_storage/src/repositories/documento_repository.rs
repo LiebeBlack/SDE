@@ -1,7 +1,8 @@
 use sqlx::SqlitePool;
-use escuela_core::domain::{documento::{Documento, DocumentoId, CategoriaDocumento, HashArchivo}, expediente::ExpedienteId};
+use escuela_core::domain::{documento::{Documento, DocumentoId, CategoriaDocumento}, expediente::ExpedienteId};
 use escuela_shared::{AppResult, AppError};
-use chrono::{DateTime, Utc};
+use crate::mappers::{DocumentoRow, map_documento_row};
+use chrono::Utc;
 
 pub struct DocumentoRepository {
     pool: SqlitePool,
@@ -41,7 +42,7 @@ impl DocumentoRepository {
 
     pub async fn obtener_por_id(&self, id: &DocumentoId) -> AppResult<Documento> {
         let row = sqlx::query_as::<_, DocumentoRow>(
-            "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE id = ?"
+            "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE id = ?"
         )
         .bind(id.as_uuid().to_string())
         .fetch_optional(&self.pool)
@@ -49,12 +50,12 @@ impl DocumentoRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?
         .ok_or_else(|| AppError::NotFound("Documento no encontrado".to_string()))?;
 
-        row.to_documento()
+        map_documento_row(row)
     }
 
     pub async fn listar_por_expediente(&self, expediente_id: &ExpedienteId) -> AppResult<Vec<Documento>> {
         let rows = sqlx::query_as::<_, DocumentoRow>(
-            "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
+            "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
         )
         .bind(expediente_id.as_uuid().to_string())
         .fetch_all(&self.pool)
@@ -62,13 +63,13 @@ impl DocumentoRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
         rows.into_iter()
-            .map(|row| row.to_documento())
+            .map(|row| map_documento_row(row))
             .collect()
     }
 
     pub async fn listar_por_categoria(&self, expediente_id: &ExpedienteId, categoria: &CategoriaDocumento) -> AppResult<Vec<Documento>> {
         let rows = sqlx::query_as::<_, DocumentoRow>(
-            "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ? AND categoria = ?"
+            "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ? AND categoria = ?"
         )
         .bind(expediente_id.as_uuid().to_string())
         .bind(categoria.as_str())
@@ -77,7 +78,7 @@ impl DocumentoRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
         rows.into_iter()
-            .map(|row| row.to_documento())
+            .map(|row| map_documento_row(row))
             .collect()
     }
 
@@ -135,7 +136,7 @@ impl DocumentoRepository {
         let pattern = format!("%{}%", termino);
         let rows = sqlx::query_as::<_, DocumentoRow>(
             r#"
-            SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones 
+            SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones 
             FROM documentos 
             WHERE nombre_archivo LIKE ? OR categoria LIKE ?
             "#,
@@ -147,7 +148,7 @@ impl DocumentoRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
         rows.into_iter()
-            .map(|row| row.to_documento())
+            .map(|row| map_documento_row(row))
             .collect()
     }
 
@@ -157,43 +158,3 @@ impl DocumentoRepository {
     }
 }
 
-#[derive(sqlx::FromRow)]
-struct DocumentoRow {
-    id: String,
-    nombre_archivo: String,
-    categoria: String,
-    hash: String,
-    ruta_local: String,
-    tamaño_bytes: Option<i64>,
-    tipo_mime: Option<String>,
-    foliado: i32,
-    fecha_foliado: Option<String>,
-    creado_en: String,
-    actualizado_en: Option<String>,
-    observaciones: Option<String>,
-}
-
-impl DocumentoRow {
-    fn to_documento(self) -> AppResult<Documento> {
-        Ok(Documento {
-            id: DocumentoId::from_uuid(uuid::Uuid::parse_str(&self.id).map_err(|e| AppError::InternalError(e.to_string()))?),
-            nombre_archivo: self.nombre_archivo,
-            categoria: CategoriaDocumento::from_str(&self.categoria)?,
-            hash: HashArchivo::from_string(self.hash)?,
-            ruta_local: self.ruta_local,
-            tamaño_bytes: self.tamaño_bytes.map(|b| b as u64),
-            tipo_mime: self.tipo_mime,
-            foliado: self.foliado == 1,
-            fecha_foliado: self.fecha_foliado
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-            creado_en: DateTime::parse_from_rfc3339(&self.creado_en)
-                .map_err(|e| AppError::InternalError(e.to_string()))?
-                .with_timezone(&Utc),
-            actualizado_en: self.actualizado_en
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-            observaciones: self.observaciones,
-        })
-    }
-}

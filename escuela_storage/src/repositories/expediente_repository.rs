@@ -1,7 +1,8 @@
 use sqlx::SqlitePool;
 use escuela_core::domain::{expediente::{ExpedienteDocente, ExpedienteId, EstadoExpediente}, documento::Documento, usuario::UsuarioId};
-use escuela_shared::{AppResult, AppError, Cedula};
-use chrono::{DateTime, Utc};
+use escuela_shared::{AppResult, AppError};
+use crate::mappers::{ExpedienteRow, DocumentoRow, map_expediente_row, map_documento_row};
+use chrono::Utc;
 
 pub struct ExpedienteRepository {
     pool: SqlitePool,
@@ -52,10 +53,10 @@ impl ExpedienteRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?
         .ok_or_else(|| AppError::NotFound("Expediente no encontrado".to_string()))?;
 
-        let mut expediente = row.to_expediente()?;
+        let mut expediente = map_expediente_row(row)?;
         
         let documentos = sqlx::query_as::<_, DocumentoRow>(
-            "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
+            "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
         )
         .bind(id.as_uuid().to_string())
         .fetch_all(&self.pool)
@@ -63,7 +64,7 @@ impl ExpedienteRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
         for doc_row in documentos {
-            expediente.documentos.push(doc_row.to_documento()?);
+            expediente.documentos.push(map_documento_row(doc_row)?);
         }
 
         Ok(expediente)
@@ -79,10 +80,10 @@ impl ExpedienteRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?
         .ok_or_else(|| AppError::NotFound("Expediente no encontrado".to_string()))?;
 
-        let mut expediente = row.to_expediente()?;
+        let mut expediente = map_expediente_row(row)?;
         
         let documentos = sqlx::query_as::<_, DocumentoRow>(
-            "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
+            "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
         )
         .bind(expediente.id.as_uuid().to_string())
         .fetch_all(&self.pool)
@@ -90,7 +91,7 @@ impl ExpedienteRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
         for doc_row in documentos {
-            expediente.documentos.push(doc_row.to_documento()?);
+            expediente.documentos.push(map_documento_row(doc_row)?);
         }
 
         Ok(expediente)
@@ -104,22 +105,46 @@ impl ExpedienteRepository {
         .await
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
+        if rows.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        // Recopilar todos los IDs de expedientes
+        let expediente_ids: Vec<String> = rows.iter()
+            .map(|row| row.id.clone())
+            .collect();
+
+        // Cargar todos los documentos en una sola query (elimina N+1)
+        let all_documentos = sqlx::query_as::<_, DocumentoRow>(
+            "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id IN (SELECT value FROM json_each(?))"
+        )
+        .bind(serde_json::to_string(&expediente_ids).map_err(|e| AppError::SerializationError(e))?)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| AppError::DatabaseError(e.to_string()))?;
+
+        // Agrupar documentos por expediente_id
+        use std::collections::HashMap;
+        let mut documentos_por_expediente: HashMap<String, Vec<Documento>> = HashMap::new();
+        
+        for doc_row in all_documentos {
+            let documento = map_documento_row(doc_row)?;
+            documentos_por_expediente
+                .entry(doc_row.expediente_id.clone())
+                .or_insert_with(Vec::new)
+                .push(documento);
+        }
+
+        // Construir expedientes con sus documentos cargados
         let mut expedientes = Vec::new();
         for row in rows {
-            let mut expediente = row.to_expediente()?;
+            let mut expediente = map_expediente_row(row)?;
             
-            let documentos = sqlx::query_as::<_, DocumentoRow>(
-                "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
-            )
-            .bind(expediente.id.as_uuid().to_string())
-            .fetch_all(&self.pool)
-            .await
-            .map_err(|e| AppError::DatabaseError(e.to_string()))?;
-
-            for doc_row in documentos {
-                expediente.documentos.push(doc_row.to_documento()?);
+            // Asignar documentos desde el HashMap
+            if let Some(docs) = documentos_por_expediente.remove(&expediente.id.as_uuid().to_string()) {
+                expediente.documentos = docs;
             }
-
+            
             expedientes.push(expediente);
         }
 
@@ -183,10 +208,10 @@ impl ExpedienteRepository {
 
         let mut expedientes = Vec::new();
         for row in rows {
-            let mut expediente = row.to_expediente()?;
+            let mut expediente = map_expediente_row(row)?;
             
             let documentos = sqlx::query_as::<_, DocumentoRow>(
-                "SELECT id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
+                "SELECT id, expediente_id, nombre_archivo, categoria, hash, ruta_local, tamaño_bytes, tipo_mime, foliado, fecha_foliado, creado_en, actualizado_en, observaciones FROM documentos WHERE expediente_id = ?"
             )
             .bind(expediente.id.as_uuid().to_string())
             .fetch_all(&self.pool)
@@ -194,7 +219,7 @@ impl ExpedienteRepository {
             .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
             for doc_row in documentos {
-                expediente.documentos.push(doc_row.to_documento()?);
+                expediente.documentos.push(map_documento_row(doc_row)?);
             }
 
             expedientes.push(expediente);
@@ -228,97 +253,3 @@ impl ExpedienteRepository {
     }
 }
 
-#[derive(sqlx::FromRow)]
-struct ExpedienteRow {
-    id: String,
-    nombres: String,
-    apellidos: String,
-    cedula: String,
-    email: String,
-    telefono: Option<String>,
-    direccion: Option<String>,
-    fecha_nacimiento: Option<String>,
-    nacionalidad: Option<String>,
-    estado_civil: Option<String>,
-    estado: String,
-    creado_por: Option<String>,
-    creado_en: String,
-    actualizado_por: Option<String>,
-    actualizado_en: Option<String>,
-    observaciones: Option<String>,
-}
-
-impl ExpedienteRow {
-    fn to_expediente(self) -> AppResult<ExpedienteDocente> {
-        Ok(ExpedienteDocente {
-            id: ExpedienteId::from_uuid(uuid::Uuid::parse_str(&self.id).map_err(|e| AppError::InternalError(e.to_string()))?),
-            nombres: self.nombres,
-            apellidos: self.apellidos,
-            cedula: Cedula::new(self.cedula)?,
-            email: self.email,
-            telefono: self.telefono,
-            direccion: self.direccion,
-            fecha_nacimiento: self.fecha_nacimiento
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-            nacionalidad: self.nacionalidad,
-            estado_civil: self.estado_civil,
-            estado: EstadoExpediente::from_str(&self.estado)?,
-            documentos: Vec::new(),
-            creado_por: self.creado_por
-                .and_then(|s| uuid::Uuid::parse_str(&s).ok())
-                .map(UsuarioId::from_uuid),
-            creado_en: DateTime::parse_from_rfc3339(&self.creado_en)
-                .map_err(|e| AppError::InternalError(e.to_string()))?
-                .with_timezone(&Utc),
-            actualizado_por: self.actualizado_por
-                .and_then(|s| uuid::Uuid::parse_str(&s).ok())
-                .map(UsuarioId::from_uuid),
-            actualizado_en: self.actualizado_en
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-            observaciones: self.observaciones,
-        })
-    }
-}
-
-#[derive(sqlx::FromRow)]
-struct DocumentoRow {
-    id: String,
-    nombre_archivo: String,
-    categoria: String,
-    hash: String,
-    ruta_local: String,
-    tamaño_bytes: Option<i64>,
-    tipo_mime: Option<String>,
-    foliado: i32,
-    fecha_foliado: Option<String>,
-    creado_en: String,
-    actualizado_en: Option<String>,
-    observaciones: Option<String>,
-}
-
-impl DocumentoRow {
-    fn to_documento(self) -> AppResult<Documento> {
-        Ok(Documento {
-            id: escuela_core::domain::documento::DocumentoId::from_uuid(uuid::Uuid::parse_str(&self.id).map_err(|e| AppError::InternalError(e.to_string()))?),
-            nombre_archivo: self.nombre_archivo,
-            categoria: escuela_core::domain::documento::CategoriaDocumento::from_str(&self.categoria)?,
-            hash: escuela_core::domain::documento::HashArchivo::from_string(self.hash)?,
-            ruta_local: self.ruta_local,
-            tamaño_bytes: self.tamaño_bytes.map(|b| b as u64),
-            tipo_mime: self.tipo_mime,
-            foliado: self.foliado == 1,
-            fecha_foliado: self.fecha_foliado
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-            creado_en: DateTime::parse_from_rfc3339(&self.creado_en)
-                .map_err(|e| AppError::InternalError(e.to_string()))?
-                .with_timezone(&Utc),
-            actualizado_en: self.actualizado_en
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-            observaciones: self.observaciones,
-        })
-    }
-}

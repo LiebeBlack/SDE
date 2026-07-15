@@ -111,9 +111,18 @@ impl Database {
             r#"
             CREATE INDEX IF NOT EXISTS idx_expedientes_cedula ON expedientes(cedula);
             CREATE INDEX IF NOT EXISTS idx_expedientes_estado ON expedientes(estado);
+            CREATE INDEX IF NOT EXISTS idx_expedientes_nombres ON expedientes(nombres);
+            CREATE INDEX IF NOT EXISTS idx_expedientes_apellidos ON expedientes(apellidos);
+            CREATE INDEX IF NOT EXISTS idx_expedientes_email ON expedientes(email);
             CREATE INDEX IF NOT EXISTS idx_documentos_expediente ON documentos(expediente_id);
             CREATE INDEX IF NOT EXISTS idx_documentos_categoria ON documentos(categoria);
             CREATE INDEX IF NOT EXISTS idx_documentos_hash ON documentos(hash);
+            CREATE INDEX IF NOT EXISTS idx_documentos_foliado ON documentos(foliado);
+            CREATE INDEX IF NOT EXISTS idx_documentos_nombre ON documentos(nombre_archivo);
+            CREATE INDEX IF NOT EXISTS idx_usuarios_email ON usuarios(email);
+            CREATE INDEX IF NOT EXISTS idx_usuarios_cedula ON usuarios(cedula);
+            CREATE INDEX IF NOT EXISTS idx_usuarios_rol ON usuarios(rol);
+            CREATE INDEX IF NOT EXISTS idx_usuarios_activo ON usuarios(activo);
             "#,
         )
         .execute(&self.pool)

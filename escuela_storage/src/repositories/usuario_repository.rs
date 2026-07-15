@@ -1,7 +1,7 @@
 use sqlx::SqlitePool;
 use escuela_core::domain::usuario::{Usuario, UsuarioId, Rol};
-use escuela_shared::{AppResult, AppError, Email, Cedula};
-use chrono::{DateTime, Utc};
+use escuela_shared::{AppResult, AppError};
+use crate::mappers::{UsuarioRow, map_usuario_row};
 
 pub struct UsuarioRepository {
     pool: SqlitePool,
@@ -48,7 +48,7 @@ impl UsuarioRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?
         .ok_or_else(|| AppError::NotFound("Usuario no encontrado".to_string()))?;
 
-        row.to_usuario()
+        map_usuario_row(row)
     }
 
     pub async fn obtener_por_email(&self, email: &str) -> AppResult<Usuario> {
@@ -61,7 +61,7 @@ impl UsuarioRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?
         .ok_or_else(|| AppError::NotFound("Usuario no encontrado".to_string()))?;
 
-        row.to_usuario()
+        map_usuario_row(row)
     }
 
     pub async fn obtener_por_cedula(&self, cedula: &str) -> AppResult<Usuario> {
@@ -74,7 +74,7 @@ impl UsuarioRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?
         .ok_or_else(|| AppError::NotFound("Usuario no encontrado".to_string()))?;
 
-        row.to_usuario()
+        map_usuario_row(row)
     }
 
     pub async fn listar(&self) -> AppResult<Vec<Usuario>> {
@@ -86,7 +86,7 @@ impl UsuarioRepository {
         .map_err(|e| AppError::DatabaseError(e.to_string()))?;
 
         rows.into_iter()
-            .map(|row| row.to_usuario())
+            .map(|row| map_usuario_row(row))
             .collect()
     }
 
@@ -127,43 +127,3 @@ impl UsuarioRepository {
     }
 }
 
-#[derive(sqlx::FromRow)]
-struct UsuarioRow {
-    id: String,
-    nombre: String,
-    apellido: String,
-    email: String,
-    cedula: String,
-    password_hash: String,
-    rol: String,
-    telefono: Option<String>,
-    activo: i32,
-    creado_en: String,
-    actualizado_en: String,
-    ultimo_acceso: Option<String>,
-}
-
-impl UsuarioRow {
-    fn to_usuario(self) -> AppResult<Usuario> {
-        Ok(Usuario {
-            id: UsuarioId::from_uuid(uuid::Uuid::parse_str(&self.id).map_err(|e| AppError::InternalError(e.to_string()))?),
-            nombre: self.nombre,
-            apellido: self.apellido,
-            email: Email::new(self.email)?,
-            cedula: Cedula::new(self.cedula)?,
-            password_hash: self.password_hash,
-            rol: Rol::from_str(&self.rol)?,
-            telefono: self.telefono,
-            activo: self.activo == 1,
-            creado_en: DateTime::parse_from_rfc3339(&self.creado_en)
-                .map_err(|e| AppError::InternalError(e.to_string()))?
-                .with_timezone(&Utc),
-            actualizado_en: DateTime::parse_from_rfc3339(&self.actualizado_en)
-                .map_err(|e| AppError::InternalError(e.to_string()))?
-                .with_timezone(&Utc),
-            ultimo_acceso: self.ultimo_acceso
-                .and_then(|s| DateTime::parse_from_rfc3339(&s).ok())
-                .map(|dt| dt.with_timezone(&Utc)),
-        })
-    }
-}
