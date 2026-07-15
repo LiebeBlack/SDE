@@ -2,11 +2,11 @@ const API_URL = '/api';
 
 // Importar OfflineStorage dinámicamente para evitar dependencias circulares
 let OfflineStorage = null;
-try {
-    OfflineStorage = await import('./offline-storage.js').then(m => m.default);
-} catch (e) {
+import('./offline-storage.js').then(m => {
+    OfflineStorage = m.default;
+}).catch(e => {
     console.warn('OfflineStorage no disponible, trabajando sin caché');
-}
+});
 
 export class ApiClient {
     static isOnline() {
