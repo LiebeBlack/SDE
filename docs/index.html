@@ -41,6 +41,21 @@
             scroll-behavior: smooth;
         }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--dark);
@@ -49,7 +64,7 @@
             overflow-x: hidden;
         }
 
-        /* Animated Background */
+        /* Premium Animated Background */
         .background {
             position: fixed;
             top: 0;
@@ -57,7 +72,10 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: var(--dark);
+            background-color: var(--dark);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
             overflow: hidden;
         }
 
@@ -68,8 +86,9 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(155, 89, 182, 0.08) 0%, transparent 50%);
-            animation: rotate 60s linear infinite;
+            background: radial-gradient(circle, rgba(155, 89, 182, 0.15) 0%, transparent 50%);
+            animation: rotate 45s linear infinite;
+            will-change: transform;
         }
 
         .background::after {
@@ -79,8 +98,9 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(187, 143, 206, 0.06) 0%, transparent 50%);
-            animation: rotate 70s linear infinite reverse;
+            background: radial-gradient(circle, rgba(187, 143, 206, 0.1) 0%, transparent 50%);
+            animation: rotate 60s linear infinite reverse;
+            will-change: transform;
         }
 
         @keyframes rotate {
@@ -162,6 +182,20 @@
             width: 100%;
         }
 
+        .mobile-menu-btn {
+            display: none;
+            cursor: pointer;
+            color: var(--white);
+            background: none;
+            border: none;
+            padding: 0.5rem;
+        }
+
+        .mobile-menu-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
         .cta-button {
             background: var(--gradient-1);
             color: var(--white);
@@ -176,8 +210,8 @@
         }
 
         .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(155, 89, 182, 0.5);
         }
 
         /* Hero Section */
@@ -212,15 +246,18 @@
             background-clip: text;
             animation: fadeInUp 1s ease;
             letter-spacing: -0.02em;
+            filter: drop-shadow(0 0 30px rgba(155, 89, 182, 0.35));
         }
 
         .hero-text p {
             font-size: 1.15rem;
-            color: var(--white);
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 2rem;
             line-height: 1.7;
             animation: fadeInUp 1s ease 0.2s backwards;
             max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .hero-buttons {
@@ -247,8 +284,8 @@
         }
 
         .primary-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(155, 89, 182, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(155, 89, 182, 0.5);
         }
 
         .secondary-button {
@@ -274,7 +311,7 @@
 
         .hero-visual {
             position: relative;
-            animation: fadeIn 1s ease 0.6s backwards;
+            animation: fadeIn 1s ease 0.6s backwards, float 6s ease-in-out infinite 1.6s;
         }
 
         .code-block {
@@ -302,9 +339,19 @@
 
         .code-block pre {
             color: var(--white);
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            white-space: pre;
+            overflow-x: auto;
             line-height: 1.6;
+            padding-bottom: 0.5rem;
+        }
+
+        .code-block pre::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .code-block pre::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 3px;
         }
 
         .code-block .keyword {
@@ -400,10 +447,11 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: -0.02em;
+            filter: drop-shadow(0 0 20px rgba(155, 89, 182, 0.15));
         }
 
         .section-header p {
-            color: var(--white);
+            color: rgba(255, 255, 255, 0.75);
             font-size: 1.1rem;
             max-width: 600px;
             margin: 0 auto;
@@ -423,12 +471,16 @@
             background: var(--glass-dark);
             backdrop-filter: blur(15px);
             border-radius: 16px;
-            padding: 2rem;
+            padding: 2.5rem 2rem;
             border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .feature-card::before {
@@ -448,10 +500,10 @@
         }
 
         .feature-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--primary);
-            background: rgba(155, 89, 182, 0.15);
-            box-shadow: 0 16px 48px rgba(155, 89, 182, 0.3);
+            transform: translateY(-12px);
+            border-color: var(--primary-light);
+            background: rgba(155, 89, 182, 0.2);
+            box-shadow: 0 20px 50px rgba(155, 89, 182, 0.4);
         }
 
         .feature-icon {
@@ -462,11 +514,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 600;
             margin-bottom: 1.5rem;
             color: var(--white);
-            letter-spacing: 0.02em;
+            box-shadow: 0 4px 15px rgba(155, 89, 182, 0.3);
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
         }
 
         .feature-card h3 {
@@ -482,8 +537,8 @@
         }
 
         .feature-card p {
-            color: var(--white);
-            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.7;
             font-size: 0.95rem;
         }
 
@@ -546,9 +601,9 @@
             border-radius: 12px;
             padding: 1rem;
             margin-bottom: 1rem;
-            border-left: 3px solid var(--primary);
             transition: all 0.3s ease;
             border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--primary);
         }
 
         .layer:hover {
@@ -635,6 +690,7 @@
             font-weight: 700;
             color: var(--white);
             letter-spacing: 0.05em;
+            flex-shrink: 0;
         }
 
         .testimonial-name {
@@ -755,25 +811,18 @@
             font-size: 0.9rem;
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        /* Code inline styling */
+        code {
+            background: rgba(155, 89, 182, 0.15);
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            padding: 0.3rem 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            display: inline-block;
+            margin: 0.3rem 0;
+            word-break: break-all;
         }
 
         /* Responsive */
@@ -805,6 +854,7 @@
 
             .footer-content {
                 grid-template-columns: 1fr;
+                text-align: center;
             }
         }
 
@@ -813,8 +863,31 @@
                 padding: 1rem 1.5rem;
             }
 
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-container .cta-button {
+                display: none;
+            }
+
             .nav-links {
                 display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 15, 0.98);
+                backdrop-filter: blur(25px);
+                flex-direction: column;
+                padding: 1.5rem 0;
+                border-bottom: 1px solid var(--glass-border);
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .nav-links.active {
+                display: flex;
             }
 
             .hero-text h1 {
@@ -864,6 +937,10 @@
         }
 
         @media (max-width: 480px) {
+            .logo {
+                font-size: 1.15rem;
+            }
+
             .hero-text h1 {
                 font-size: 2rem;
             }
@@ -889,6 +966,17 @@
             }
         }
 
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         /* Animations */
         @keyframes fadeInUp {
             from {
@@ -906,17 +994,6 @@
                 opacity: 0;
             }
             to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
                 opacity: 1;
             }
         }
@@ -996,7 +1073,12 @@
             <div class="logo">
                 <span>Sistema de Gestión Escolar</span>
             </div>
-            <ul class="nav-links">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menú">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#about">Sobre el Proyecto</a></li>
                 <li><a href="#features">Características</a></li>
                 <li><a href="#architecture">Arquitectura</a></li>
@@ -1014,8 +1096,8 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Sistema de Gestión Escolar</h1>
-                <p>Solución profesional para gestión documental educativa. Desarrollado con Rust y Clean Architecture para máximo rendimiento y seguridad.</p>
+                <h1>Gestión Escolar Inteligente</h1>
+                <p>La plataforma definitiva para la administración de expedientes educativos. Construida sobre Rust y <i>Clean Architecture</i> para ofrecer un rendimiento inigualable y seguridad de grado militar.</p>
                 <div class="hero-buttons">
                     <a href="https://github.com/LiebeBlack/SDE" class="primary-button" target="_blank">
                         <span>Iniciar</span>
@@ -1081,19 +1163,19 @@
     <!-- About Section -->
     <section class="features" id="about">
         <div class="section-header">
-            <h2>Sobre el Proyecto</h2>
-            <p>Sistema de Gestión Escolar desarrollado como tesis universitaria para gestión documental integral</p>
+            <h2>Acerca del Proyecto</h2>
+            <p>Una solución vanguardista diseñada para revolucionar la gestión documental en instituciones educativas.</p>
         </div>
         <div class="architecture-content">
             <div class="architecture-text">
-                <h3>Objetivo del Proyecto</h3>
-                <p>El Sistema de Gestión Escolar es una solución integral desarrollada como parte de una tesis universitaria para la gestión documental de instituciones educativas. El sistema permite administrar expedientes docentes y administrativos de manera eficiente, segura y moderna.</p>
+                <h3>Objetivo Principal</h3>
+                <p>Nacido como un proyecto de tesis universitaria, este sistema representa el estado del arte en la administración de expedientes docentes y administrativos. Nuestro enfoque prioriza la eficiencia, la seguridad de la información y una experiencia de usuario fluida y moderna.</p>
                 
-                <h3>Arquitectura del Sistema</h3>
-                <p>El proyecto utiliza un workspace multicrate de Rust siguiendo los principios de Clean Architecture/Hexagonal, lo que garantiza separación de responsabilidades, testabilidad y mantenibilidad a largo plazo.</p>
+                <h3>Arquitectura Robusta</h3>
+                <p>Implementado mediante un <i>workspace multicrate</i> en Rust, el sistema sigue estrictamente los principios de <b>Clean Architecture (Arquitectura Hexagonal)</b>. Esto asegura un código altamente mantenible, fácilmente testeable y preparado para escalar.</p>
                 
-                <h3>Tecnologías Utilizadas</h3>
-                <p>Desarrollado completamente en Rust para máximo rendimiento y seguridad, con SQLite como base de datos embebida, Axum como framework web, y una interfaz web moderna con JavaScript vanilla.</p>
+                <h3>Stack Tecnológico</h3>
+                <p>Construido 100% en <b>Rust</b> para garantizar cero fugas de memoria y respuestas en milisegundos. Utiliza <b>SQLite</b> como motor de base de datos embebido para su funcionamiento sin conexión (<i>Offline-First</i>), <b>Axum</b> para su API RESTful ultrarrápida, y un frontend elegante sin frameworks pesados.</p>
                 
                 <div style="margin-top: 2rem;">
                     <a href="https://github.com/LiebeBlack/SDE#readme" class="primary-button" target="_blank">
@@ -1125,34 +1207,46 @@
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">Seguridad</div>
-                <h3>Seguridad Máxima</h3>
-                <p>Autenticación JWT, RBAC granular, encriptación AES-256, y auditoría completa de todas las acciones.</p>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h3>Seguridad de Grado Militar</h3>
+                <p>Autenticación mediante JWT, control de acceso basado en roles (RBAC) granular, encriptación AES-256 y un registro de auditoría inmutable para cada acción.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Rendimiento</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
                 <h3>Rendimiento Extremo</h3>
-                <p>Compilado con Rust para máximo rendimiento. Respuestas en milisegundos con cero dependencias externas.</p>
+                <p>Aprovechando la potencia de Rust, el servidor procesa y responde peticiones en apenas unos milisegundos, optimizando al máximo los recursos de hardware.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Arquitectura</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
                 <h3>Clean Architecture</h3>
-                <p>Arquitectura modular y escalable. Separación clara de responsabilidades para mantenimiento fácil.</p>
+                <p>Estructura de código modular y escalable que aísla completamente la lógica de negocio de la base de datos y la interfaz, facilitando su evolución continua.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Offline</div>
-                <h3>Offline-First</h3>
-                <p>Funciona completamente sin internet. Base de datos SQLite embebida y almacenamiento local.</p>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 00-12.728 0M15.536 8.464a5 5 0 00-7.072 0M12 12v.01M2 2l20 20"></path></svg>
+                </div>
+                <h3>Filosofía Offline-First</h3>
+                <p>Capacidad operativa total incluso sin conexión a internet. La base de datos embebida SQLite permite sincronización diferida y autonomía completa.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Interfaz</div>
-                <h3>Interfaz Moderna</h3>
-                <p>Diseño glassmorphism, animaciones suaves, responsive design, y accesibilidad WCAG 2.1 AA.</p>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3>Interfaz Premium</h3>
+                <p>Diseño basado en <i>Glassmorphism</i> con animaciones fluidas, totalmente adaptable a móviles y accesible según las estrictas normativas WCAG 2.1 AA.</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Dashboard</div>
-                <h3>Dashboard Inteligente</h3>
-                <p>Estadísticas en tiempo real, búsqueda avanzada, y visualización de datos interactiva.</p>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <h3>Panel Inteligente</h3>
+                <p>Dashboard de control centralizado con estadísticas instantáneas, filtros de búsqueda avanzada y visualización de datos dinámica e interactiva.</p>
             </div>
         </div>
     </section>
@@ -1285,39 +1379,51 @@ cargo run --release</pre>
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon">README</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
                 <h3>README Principal</h3>
                 <p>Documentación general del proyecto con arquitectura, características y guía de inicio rápido.</p>
                 <a href="https://github.com/LiebeBlack/SDE#readme" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver README</a>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Arquitectura</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path></svg>
+                </div>
                 <h3>Arquitectura</h3>
                 <p>Documentación detallada de la arquitectura Clean Architecture, patrones de diseño y estructura del sistema.</p>
                 <a href="https://github.com/LiebeBlack/SDE/blob/main/ARCHITECTURE.md" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Arquitectura</a>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Despliegue</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
                 <h3>Despliegue</h3>
                 <p>Guía completa de despliegue en diferentes entornos: desarrollo, producción, Docker y servicios.</p>
                 <a href="https://github.com/LiebeBlack/SDE/blob/main/DEPLOYMENT.md" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Despliegue</a>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Contribuir</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                </div>
                 <h3>Contribuir</h3>
                 <p>Guía para contribuidores con convenciones de código, proceso de pull requests y código de conducta.</p>
                 <a href="https://github.com/LiebeBlack/SDE/blob/main/CONTRIBUTING.md" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Guía</a>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Releases</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                </div>
                 <h3>Releases</h3>
-                <p>Historial de versiones, notas de lanzamiento y descargas de binarios compilados.</p>
+                <p>Historial de versiones, notas de lanzamiento y descargas de binarios compilados listos para usar.</p>
                 <a href="https://github.com/LiebeBlack/SDE/releases" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Releases</a>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">Licencia</div>
+                <div class="feature-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
                 <h3>Licencia</h3>
-                <p>Información sobre licencias duales MIT y Apache-2.0 para uso comercial y open source.</p>
+                <p>Información detallada sobre las licencias duales MIT y Apache-2.0 para uso comercial y de código abierto.</p>
                 <a href="https://github.com/LiebeBlack/SDE/blob/main/LICENSE" class="secondary-button" style="margin-top: 1rem; padding: 0.5rem 1rem; font-size: 0.9rem;" target="_blank">Ver Licencia</a>
             </div>
         </div>
@@ -1359,12 +1465,12 @@ cargo run --release</pre>
     <section class="testimonials" id="testimonials">
         <div class="section-header">
             <h2>Casos de Uso</h2>
-            <p>Instituciones educativas que ya están transformando su gestión documental</p>
+            <p>Descubre cómo otras instituciones educativas están transformando su gestión documental</p>
         </div>
         <div class="testimonials-grid">
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "Implementamos el Sistema de Gestión Escolar y redujimos el tiempo de búsqueda de expedientes en un 85%. La interfaz es intuitiva y el soporte excepcional."
+                    "Implementamos el Sistema de Gestión Escolar y logramos reducir el tiempo de búsqueda de expedientes en un 85%. La interfaz es sumamente intuitiva y el rendimiento es impecable."
                 </div>
                 <div class="testimonial-author">
                     <div class="testimonial-avatar">CM</div>
@@ -1376,7 +1482,7 @@ cargo run --release</pre>
             </div>
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "La arquitectura modular nos permitió integrar el sistema con nuestros procesos existentes sin interrupciones. Seguridad y rendimiento de primer nivel."
+                    "La arquitectura modular nos permitió integrar el sistema de forma transparente con nuestros procesos internos. Nos ha brindado la seguridad y confianza que tanto necesitábamos."
                 </div>
                 <div class="testimonial-author">
                     <div class="testimonial-avatar">MG</div>
@@ -1388,7 +1494,7 @@ cargo run --release</pre>
             </div>
             <div class="testimonial-card">
                 <div class="testimonial-text">
-                    "El modo offline-first es fundamental para nuestra institución rural. Funciona perfectamente sin conexión a internet y se sincroniza cuando tenemos red."
+                    "El modo Offline-First resultó ser una característica vital para nuestra sede rural. El sistema funciona a la perfección sin conexión a internet y se sincroniza automáticamente al tener red."
                 </div>
                 <div class="testimonial-author">
                     <div class="testimonial-avatar">RS</div>
@@ -1404,10 +1510,10 @@ cargo run --release</pre>
     <!-- CTA Section -->
     <section class="cta" id="contact">
         <div class="cta-content">
-            <h2>¿Listo para Transformar tu Institución?</h2>
-            <p>Únete a las instituciones educativas que ya están revolucionando su gestión documental con nuestra solución profesional.</p>
-            <a href="https://github.com/LiebeBlack/SDE" class="primary-button" style="background: var(--white); color: var(--primary);" target="_blank">
-                <span>Comenzar Gratis</span>
+            <h2>¿Listo para digitalizar tu Institución?</h2>
+            <p>Únete a la vanguardia educativa y revoluciona la gestión documental con una solución profesional y segura.</p>
+            <a href="https://github.com/LiebeBlack/SDE" class="primary-button" style="background: var(--white); color: var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.2);" target="_blank">
+                <span>Comenzar a Explorar</span>
             </a>
         </div>
     </section>
@@ -1436,10 +1542,10 @@ cargo run --release</pre>
                 <a href="https://liebeblack.github.io/LiebeBlack/" target="_blank">GitHub Pages</a>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>© 2024 Sistema de Gestión Escolar. Desarrollado usando Rust.</p>
-            <p>Licenciado bajo MIT y Apache-2.0</p>
-        </div>
+            <div class="footer-bottom">
+                <p>© <span id="currentYear">2025</span> Sistema de Gestión Escolar. Desarrollado con Rust.</p>
+                <p>Licenciado bajo MIT y Apache-2.0</p>
+            </div>
     </footer>
 
     <script>
@@ -1474,10 +1580,13 @@ cargo run --release</pre>
         };
 
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+            entries.forEach((entry, index) => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 150); // Stagger the animation!
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
@@ -1490,17 +1599,37 @@ cargo run --release</pre>
             observer.observe(el);
         });
 
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Dynamic year
+        const yearEl = document.getElementById('currentYear');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
+
         // Counter animation for stats
-        const animateCounter = (element, target, duration = 2000) => {
+        const animateCounter = (element, target, prefix = '', suffix = '', duration = 2000) => {
             let start = 0;
             const increment = target / (duration / 16);
             const timer = setInterval(() => {
                 start += increment;
                 if (start >= target) {
-                    element.textContent = target;
+                    element.textContent = prefix + target + suffix;
                     clearInterval(timer);
                 } else {
-                    element.textContent = Math.floor(start);
+                    const current = target % 1 !== 0 ? start.toFixed(1) : Math.floor(start);
+                    element.textContent = prefix + current + suffix;
                 }
             }, 16);
         };
@@ -1514,11 +1643,11 @@ cargo run --release</pre>
                     statNumbers.forEach(stat => {
                         const text = stat.textContent;
                         if (text.includes('%')) {
-                            animateCounter(stat, 99.9);
+                            animateCounter(stat, 99.9, '', '%');
                         } else if (text.includes('ms')) {
-                            animateCounter(stat, 50);
+                            animateCounter(stat, 50, '<', 'ms');
                         } else if (text.includes('bit')) {
-                            animateCounter(stat, 256);
+                            animateCounter(stat, 256, '', '-bit');
                         }
                     });
                     statsObserver.unobserve(entry.target);
