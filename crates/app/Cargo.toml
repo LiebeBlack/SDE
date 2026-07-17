@@ -1,0 +1,23 @@
+[package]
+name = "app"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "institucion-app"
+path = "src/main.rs"
+
+[dependencies]
+app_core = { path = "../core" }
+storage = { path = "../storage" }
+pdf_engine = { path = "../pdf_engine" }
+serde.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+anyhow.workspace = true
+rusqlite.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+eframe = "0.28"
+egui = "0.28"
+rfd = "0.14"

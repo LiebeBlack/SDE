@@ -1,0 +1,13 @@
+[package]
+name = "storage"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+app_core = { path = "../core" }
+serde.workspace = true
+chrono.workspace = true
+uuid.workspace = true
+anyhow.workspace = true
+rusqlite.workspace = true
+tracing.workspace = true

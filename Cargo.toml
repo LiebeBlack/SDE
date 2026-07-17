@@ -1,77 +1,23 @@
 [workspace]
-members = [
-    "escuela_core",
-    "escuela_storage", 
-    "escuela_api",
-    "escuela_shared",
-]
 resolver = "2"
+members = [
+    "crates/app",
+    "crates/core",
+    "crates/storage",
+    "crates/pdf_engine",
+]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["Tesis Universidad"]
-license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
-# Async runtime
-tokio = { version = "1.35", features = ["full"] }
-
-# Web framework
-axum = { version = "0.7", features = ["multipart"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["fs", "trace", "cors"] }
-axum-extra = { version = "0.9", features = ["typed-header"] }
-
-# Database
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "sqlite", "chrono", "uuid", "json"] }
-
-# Serialization
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-
-# Time handling
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 chrono = { version = "0.4", features = ["serde"] }
-
-# UUID
-uuid = { version = "1.6", features = ["v4", "serde"] }
-
-# Hashing
-sha2 = "0.10"
-hex = "0.4"
-argon2 = { version = "0.5", features = ["password-hash", "rand"] }
-rand_core = { version = "0.6", features = ["getrandom"] }
-jsonwebtoken = "9.3"
-
-# Backup
-zip = { version = "2.2", default-features = false, features = ["deflate"] }
-
-# Error handling
-anyhow = "1.0"
-thiserror = "1.0"
-
-# Validation
-validator = { version = "0.16", features = ["derive"] }
-
-# File type detection
-infer = "0.15"
-mime_guess = "2.0"
-
-# Logging
+uuid = { version = "1", features = ["v4", "serde"] }
+anyhow = "1"
+thiserror = "1"
+rusqlite = { version = "0.31", features = ["bundled", "chrono"] }
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-
-# Async traits
-async-trait = "0.1"
-
-[profile.release]
-opt-level = "z"        # Optimize for size
-lto = true             # Link Time Optimization
-codegen-units = 1      # Single codegen unit for better optimization
-panic = "abort"        # Reduce binary size
-strip = true           # Remove debug symbols
-overflow-checks = false # Disable overflow checks in release
-
-[profile.release.package."*"]
-opt-level = "z"
-strip = true
+tracing-subscriber = "0.3"
