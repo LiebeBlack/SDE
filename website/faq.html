@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Sistema de Gestión Institucional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: textGradient 3s ease infinite;
+        }
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+        }
+        .dark-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .scale-in {
+            animation: scaleIn 0.6s ease-out;
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .rotate-in {
+            animation: rotateIn 0.8s ease-out;
+        }
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-10deg); }
+            to { opacity: 1; transform: rotate(0deg); }
+        }
+        .bounce-in {
+            animation: bounceIn 1s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+        .stagger-7 { animation-delay: 0.7s; }
+        .stagger-8 { animation-delay: 0.8s; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Navigation
+        const Navbar = () => (
+            <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-lg border-b border-gray-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-3xl">🏫</span>
+                            <span className="font-bold text-xl">SGI Pro</span>
+                        </div>
+                        <div className="hidden md:flex space-x-8">
+                            <a href="index.html" className="hover:text-purple-400 transition">Inicio</a>
+                            <a href="features.html" className="hover:text-purple-400 transition">Características</a>
+                            <a href="technology.html" className="hover:text-purple-400 transition">Tecnología</a>
+                            <a href="faq.html" className="text-purple-400">FAQ</a>
+                            <a href="about.html" className="hover:text-purple-400 transition">Sobre el Proyecto</a>
+                            <a href="index.html#download" className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition">
+                                Descargar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        );
+
+        // FAQ Item Component
+        const FAQItem = ({ question, answer }) => {
+            const [isOpen, setIsOpen] = useState(false);
+
+            return (
+                <div className="dark-card rounded-xl overflow-hidden card-hover">
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full p-6 text-left flex justify-between items-center"
+                    >
+                        <span className="font-semibold text-lg">{question}</span>
+                        <span className="text-2xl transition-transform duration-300">
+                            {isOpen ? '−' : '+'}
+                        </span>
+                    </button>
+                    {isOpen && (
+                        <div className="px-6 pb-6 pt-0">
+                            <p className="text-gray-300 leading-relaxed">{answer}</p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // FAQ Page
+        const FAQPage = () => {
+            const faqs = [
+                {
+                    question: "¿Es SGI Pro realmente gratuito?",
+                    answer: "Sí, SGI Pro es 100% gratuito. Es un proyecto open source colaborativo sin costos recurrentes, sin suscripciones y sin restricciones. Puedes usarlo, modificarlo y distribuirlo libremente."
+                },
+                {
+                    question: "¿Necesito conexión a internet para usarlo?",
+                    answer: "No, SGI Pro funciona completamente offline. Todos los datos se almacenan localmente en tu computadora usando SQLite. No requiere conexión a internet para ninguna de sus funcionalidades."
+                },
+                {
+                    question: "¿En qué sistemas operativos funciona?",
+                    answer: "Actualmente SGI Pro está disponible para Windows 10/11. Estamos trabajando en versiones para macOS y Linux. Al ser open source, también puedes compilarlo para otras plataformas."
+                },
+                {
+                    question: "¿Mis datos están seguros?",
+                    answer: "Absolutamente. Tus datos nunca salen de tu computadora. Todo se almacena localmente en una base de datos SQLite. No hay tracking, telemetría, ni envío de datos a servidores externos. Tienes control total de tu información."
+                },
+                {
+                    question: "¿Cuántos estudiantes/empleados puedo gestionar?",
+                    answer: "No hay límites. Puedes gestionar tantos estudiantes, empleados, documentos y departamentos como necesites. SQLite maneja eficientemente grandes volúmenes de datos."
+                },
+                {
+                    question: "¿Puedo hacer backup de mis datos?",
+                    answer: "Sí, la base de datos es un archivo SQLite que puedes copiar y respaldar fácilmente. Simplemente copia el archivo de la base de datos a una ubicación segura para tener un backup completo."
+                },
+                {
+                    question: "¿Cómo actualizo el software?",
+                    answer: "Las actualizaciones son gratuitas. Cuando haya una nueva versión, simplemente descarga el instalador más reciente y ejecútalo. Tus datos se preservarán automáticamente durante la actualización."
+                },
+                {
+                    question: "¿Puedo personalizar el software?",
+                    answer: "Sí, al ser open source puedes modificar el código fuente según tus necesidades. También puedes contribuir mejoras al proyecto principal si deseas compartirlas con la comunidad."
+                },
+                {
+                    question: "¿Hay soporte técnico disponible?",
+                    answer: "Al ser un proyecto open source, el soporte es comunitario. Puedes obtener ayuda a través de los repositorios del proyecto, documentación y foros de la comunidad. También hay documentación completa disponible."
+                },
+                {
+                    question: "¿Puedo integrarlo con otros sistemas?",
+                    answer: "Sí, al tener acceso al código fuente puedes crear integraciones personalizadas. La arquitectura modular facilita la conexión con otros sistemas mediante APIs personalizadas o exportación/importación de datos."
+                },
+                {
+                    question: "¿Qué requisitos de hardware necesita?",
+                    answer: "Los requisitos mínimos son: Windows 10/11, 4GB de RAM, 500MB de espacio en disco y procesador de 64 bits. Para mejor rendimiento con grandes volúmenes de datos, se recomienda 8GB de RAM."
+                },
+                {
+                    question: "¿Puedo usarlo en múltiples computadoras?",
+                    answer: "Sí, puedes instalar SGI Pro en tantas computadoras como necesites. Cada instalación tendrá su propia base de datos local. Si necesitas sincronización entre múltiples ubicaciones, puedes implementar soluciones personalizadas."
+                },
+                {
+                    question: "¿Genera reportes y documentos PDF?",
+                    answer: "Sí, SGI Pro incluye un motor de generación de PDFs integrado. Puedes generar constancias de estudios, reportes y otros documentos con formato profesional directamente desde la aplicación."
+                },
+                {
+                    question: "¿Es adecuado para instituciones grandes?",
+                    answer: "Sí, SGI Pro está diseñado para escalar. La arquitectura basada en SQLite y Rust permite manejar eficientemente grandes volúmenes de datos sin sacrificar rendimiento."
+                },
+                {
+                    question: "¿Cómo puedo contribuir al proyecto?",
+                    answer: "Puedes contribuir de muchas formas: reportando bugs, sugiriendo mejoras, escribiendo documentación, traduciendo la interfaz a otros idiomas, o contribuyendo código directamente a través de pull requests en el repositorio."
+                }
+            ];
+
+            return (
+                <div className="gradient-bg min-h-screen">
+                    <Navbar />
+                    <div className="pt-24 pb-16">
+                        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-16">
+                                <h1 className="text-5xl md:text-6xl font-bold mb-4">
+                                    Preguntas <span className="gradient-text">Frecuentes</span>
+                                </h1>
+                                <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                                    Encuentra respuestas a las preguntas más comunes sobre SGI Pro
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                {faqs.map((faq, index) => (
+                                    <div key={index} className={`scale-in stagger-${(index % 8) + 1}`}>
+                                        <FAQItem
+                                            question={faq.question}
+                                            answer={faq.answer}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-16 text-center">
+                                <div className="dark-card rounded-2xl p-8 mb-8">
+                                    <h2 className="text-2xl font-bold mb-4">¿No encuentras tu respuesta?</h2>
+                                    <p className="text-gray-400 mb-6">
+                                        Revisa la documentación completa o contacta a la comunidad para obtener ayuda adicional.
+                                    </p>
+                                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                        <a href="technology.html" className="bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 transition">
+                                            📖 Ver Documentación
+                                        </a>
+                                        <a href="about.html" className="border border-purple-600 text-purple-400 px-6 py-3 rounded-full hover:bg-purple-600/10 transition">
+                                            🤝 Comunidad
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <a href="index.html#download" className="inline-block bg-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-700 transition text-lg">
+                                    📥 Descargar SGI Pro Gratis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer className="bg-gray-950 text-white py-12 border-t border-gray-800">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid md:grid-cols-4 gap-8 mb-8">
+                                <div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="text-3xl">🏫</span>
+                                        <span className="font-bold text-xl">SGI Pro</span>
+                                    </div>
+                                    <p className="text-gray-400">
+                                        Sistema de gestión institucional moderno, seguro y 100% local.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Producto</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="features.html" className="hover:text-white transition">Características</a></li>
+                                        <li><a href="technology.html" className="hover:text-white transition">Tecnología</a></li>
+                                        <li><a href="index.html#download" className="hover:text-white transition">Descargar</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Soporte</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="technology.html" className="hover:text-white transition">Documentación</a></li>
+                                        <li><a href="faq.html" className="hover:text-white transition">FAQ</a></li>
+                                        <li><a href="about.html" className="hover:text-white transition">Sobre el Proyecto</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Legal</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="#" className="hover:text-white transition">Privacidad</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Términos</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Licencia</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+                                <p>© 2024 SGI Pro. Proyecto Open Source Libre y Colaborativo</p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FAQPage />, document.getElementById('root'));
+    </script>
+</body>
+</html>

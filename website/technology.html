@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnología - Sistema de Gestión Institucional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: textGradient 3s ease infinite;
+        }
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .code-block {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-hover:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.3);
+        }
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .scale-in {
+            animation: scaleIn 0.6s ease-out;
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .rotate-in {
+            animation: rotateIn 0.8s ease-out;
+        }
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-10deg); }
+            to { opacity: 1; transform: rotate(0deg); }
+        }
+        .bounce-in {
+            animation: bounceIn 1s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Navigation
+        const Navbar = () => (
+            <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-lg border-b border-gray-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-3xl">🏫</span>
+                            <span className="font-bold text-xl">SGI Pro</span>
+                        </div>
+                        <div className="hidden md:flex space-x-8">
+                            <a href="index.html" className="hover:text-purple-400 transition">Inicio</a>
+                            <a href="features.html" className="hover:text-purple-400 transition">Características</a>
+                            <a href="technology.html" className="text-purple-400">Tecnología</a>
+                            <a href="faq.html" className="hover:text-purple-400 transition">FAQ</a>
+                            <a href="about.html" className="hover:text-purple-400 transition">Sobre el Proyecto</a>
+                            <a href="index.html#download" className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition">
+                                Descargar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        );
+
+        // Technology Page
+        const TechnologyPage = () => {
+            const techStack = [
+                {
+                    name: "Rust",
+                    icon: "⚙️",
+                    description: "Lenguaje de sistemas moderno con seguridad de memoria garantizada",
+                    benefits: ["Alto rendimiento", "Seguridad de memoria", "Sin garbage collector", "Compilación a nativo"],
+                    code: `fn main() {
+    println!("¡Hola, SGI Pro!");
+}`
+                },
+                {
+                    name: "SQLite",
+                    icon: "💾",
+                    description: "Base de datos SQL embebida sin servidor",
+                    benefits: ["Sin configuración", "Cero dependencias", "Transacciones ACID", "Portabilidad total"],
+                    code: `CREATE TABLE estudiantes (
+    id TEXT PRIMARY KEY,
+    nombre TEXT NOT NULL,
+    matricula TEXT UNIQUE
+);`
+                },
+                {
+                    name: "egui",
+                    icon: "🎨",
+                    description: "Framework de UI inmediata para Rust",
+                    benefits: ["Renderizado instantáneo", "Multiplataforma", "Sin dependencias web", "API simple"],
+                    code: `ui.heading("Estudiantes");
+if ui.button("Nuevo").clicked() {
+    mostrar_formulario();
+}`
+                },
+                {
+                    name: "printpdf",
+                    icon: "📑",
+                    description: "Generación de PDFs en Rust puro",
+                    benefits: ["Sin dependencias externas", "Alta calidad", "Personalización total", "Rápido"],
+                    code: `let doc = PdfDocument::new(
+    "Constancia",
+    Mm(210.0),
+    Mm(297.0)
+);`
+                }
+            ];
+
+            const architecture = [
+                {
+                    title: "Arquitectura Modular",
+                    description: "Sistema organizado en crates independientes para máxima mantenibilidad",
+                    modules: [
+                        { name: "app", desc: "Interfaz gráfica y estado de la aplicación" },
+                        { name: "core", desc: "Modelos de datos y lógica de negocio" },
+                        { name: "storage", desc: "Repositorios SQLite y almacenamiento de archivos" },
+                        { name: "pdf_engine", desc: "Generación y procesamiento de documentos PDF" }
+                    ]
+                },
+                {
+                    title: "Patrón Repository",
+                    description: "Separación clara entre lógica de negocio y acceso a datos",
+                    modules: [
+                        { name: "Traits", desc: "Interfaces genéricas para operaciones CRUD" },
+                        { name: "Implementaciones", desc: "Repositorios SQLite concretos" },
+                        { name: "Servicios", desc: "Lógica de negocio que usa repositorios" },
+                        { name: "Validación", desc: "Reglas de negocio en la capa de servicios" }
+                    ]
+                },
+                {
+                    title: "Estado Reactivo",
+                    description: "Gestión de estado centralizada con actualizaciones eficientes",
+                    modules: [
+                        { name: "AppState", desc: "Estructura central con toda la información" },
+                        { name: "UI Components", desc: "Componentes que reaccionan a cambios" },
+                        { name: "Event Handling", desc: "Sistema de eventos para interacciones" },
+                        { name: "Mensajes", desc: "Sistema de notificaciones al usuario" }
+                    ]
+                }
+            ];
+
+            return (
+                <div className="gradient-bg min-h-screen">
+                    <Navbar />
+                    <div className="pt-24 pb-16">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-16">
+                                <h1 className="text-5xl md:text-6xl font-bold mb-4">
+                                    Tecnología <span className="gradient-text">Moderna</span>
+                                </h1>
+                                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                                    Construido con las mejores tecnologías open source para garantizar rendimiento, seguridad y mantenibilidad
+                                </p>
+                            </div>
+
+                            {/* Tech Stack */}
+                            <div className="mb-16">
+                                <h2 className="text-3xl font-bold mb-8 text-center">Stack Tecnológico</h2>
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    {techStack.map((tech, index) => (
+                                        <div key={index} className={`bg-gray-800/50 rounded-2xl p-6 card-hover border border-gray-700 scale-in stagger-${(index % 4) + 1}`}>
+                                            <div className="flex items-center space-x-4 mb-4">
+                                                <span className="text-4xl float">{tech.icon}</span>
+                                                <div>
+                                                    <h3 className="text-2xl font-bold">{tech.name}</h3>
+                                                    <p className="text-gray-400">{tech.description}</p>
+                                                </div>
+                                            </div>
+                                            <div className="mb-4">
+                                                <h4 className="font-semibold mb-2 text-purple-400">Beneficios:</h4>
+                                                <ul className="space-y-1">
+                                                    {tech.benefits.map((benefit, i) => (
+                                                        <li key={i} className="text-gray-300 text-sm slide-in-left">• {benefit}</li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                            <div className="code-block p-4 shimmer">
+                                                <pre className="code-font text-sm text-green-400 overflow-x-auto">
+                                                    <code>{tech.code}</code>
+                                                </pre>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Architecture */}
+                            <div className="mb-16">
+                                <h2 className="text-3xl font-bold mb-8 text-center">Arquitectura del Sistema</h2>
+                                <div className="grid md:grid-cols-3 gap-6">
+                                    {architecture.map((arch, index) => (
+                                        <div key={index} className={`bg-gray-800/50 rounded-2xl p-6 card-hover border border-gray-700 scale-in stagger-${(index % 3) + 1}`}>
+                                            <h3 className="text-xl font-bold mb-3 text-purple-400">{arch.title}</h3>
+                                            <p className="text-gray-400 mb-4">{arch.description}</p>
+                                            <ul className="space-y-3">
+                                                {arch.modules.map((module, i) => (
+                                                    <li key={i} className="bg-gray-900/50 rounded-lg p-3 slide-in-left">
+                                                        <div className="font-semibold text-white">{module.name}</div>
+                                                        <div className="text-gray-400 text-sm">{module.desc}</div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Project Structure */}
+                            <div className="mb-16">
+                                <h2 className="text-3xl font-bold mb-8 text-center">Estructura del Proyecto</h2>
+                                <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700">
+                                    <pre className="code-font text-sm text-gray-300 overflow-x-auto">
+                                        <code>{`SDE/
+├── crates/
+│   ├── app/              # Interfaz gráfica (egui)
+│   │   ├── src/
+│   │   │   ├── main.rs
+│   │   │   ├── state.rs
+│   │   │   ├── ui/
+│   │   │   │   ├── mod.rs
+│   │   │   │   ├── estudiantes_view.rs
+│   │   │   │   ├── empleados_view.rs
+│   │   │   │   └── ...
+│   │   │   └── theme.rs
+│   ├── core/             # Lógica de negocio
+│   │   ├── src/
+│   │   │   ├── models/
+│   │   │   ├── services/
+│   │   │   └── validation/
+│   ├── storage/          # Persistencia
+│   │   ├── src/
+│   │   │   ├── db.rs
+│   │   │   ├── repositories/
+│   │   │   └── migrations/
+│   └── pdf_engine/       # Generación PDF
+│       └── src/
+│           ├── generator.rs
+│           └── reader.rs
+├── Cargo.toml
+└── website/             # Sitio web`}</code>
+                                    </pre>
+                                </div>
+                            </div>
+
+                            {/* Open Source */}
+                            <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-2xl p-8 border border-purple-700">
+                                <div className="text-center">
+                                    <h2 className="text-3xl font-bold mb-4">🌟 Proyecto Open Source</h2>
+                                    <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                                        SGI Pro es un proyecto libre y colaborativo. Todo el código es open source, 
+                                        transparente y disponible para la comunidad. Sin costos, sin restricciones, 
+                                        sin tracking.
+                                    </p>
+                                    <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+                                        <div className="bg-gray-900/50 rounded-lg p-4">
+                                            <div className="text-2xl mb-2">📖</div>
+                                            <div className="font-semibold">Código Abierto</div>
+                                            <div className="text-gray-400 text-sm">Repositorio público</div>
+                                        </div>
+                                        <div className="bg-gray-900/50 rounded-lg p-4">
+                                            <div className="text-2xl mb-2">🤝</div>
+                                            <div className="font-semibold">Colaborativo</div>
+                                            <div className="text-gray-400 text-sm">Contribuciones bienvenidas</div>
+                                        </div>
+                                        <div className="bg-gray-900/50 rounded-lg p-4">
+                                            <div className="text-2xl mb-2">🔓</div>
+                                            <div className="font-semibold">100% Libre</div>
+                                            <div className="text-gray-400 text-sm">Sin licencias restrictivas</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-16 text-center">
+                                <a href="index.html#download" className="inline-block bg-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-700 transition text-lg">
+                                    📥 Descargar SGI Pro Gratis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer className="bg-gray-950 text-white py-12 border-t border-gray-800">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid md:grid-cols-4 gap-8 mb-8">
+                                <div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="text-3xl">🏫</span>
+                                        <span className="font-bold text-xl">SGI Pro</span>
+                                    </div>
+                                    <p className="text-gray-400">
+                                        Sistema de gestión institucional moderno, seguro y 100% local.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Producto</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="features.html" className="hover:text-white transition">Características</a></li>
+                                        <li><a href="technology.html" className="hover:text-white transition">Tecnología</a></li>
+                                        <li><a href="index.html#download" className="hover:text-white transition">Descargar</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Soporte</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="technology.html" className="hover:text-white transition">Documentación</a></li>
+                                        <li><a href="faq.html" className="hover:text-white transition">FAQ</a></li>
+                                        <li><a href="about.html" className="hover:text-white transition">Sobre el Proyecto</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Legal</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="#" className="hover:text-white transition">Privacidad</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Términos</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Licencia</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+                                <p>© 2024 SGI Pro. Proyecto Open Source Libre y Colaborativo</p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<TechnologyPage />, document.getElementById('root'));
+    </script>
+</body>
+</html>

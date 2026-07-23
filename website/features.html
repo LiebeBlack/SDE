@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Características - Sistema de Gestión Institucional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: textGradient 3s ease infinite;
+        }
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-hover:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+        }
+        .dark-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .scale-in {
+            animation: scaleIn 0.6s ease-out;
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .rotate-in {
+            animation: rotateIn 0.8s ease-out;
+        }
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-10deg); }
+            to { opacity: 1; transform: rotate(0deg); }
+        }
+        .bounce-in {
+            animation: bounceIn 1s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+        .stagger-7 { animation-delay: 0.7s; }
+        .stagger-8 { animation-delay: 0.8s; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Navigation
+        const Navbar = () => (
+            <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-lg border-b border-gray-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-3xl">🏫</span>
+                            <span className="font-bold text-xl">SGI Pro</span>
+                        </div>
+                        <div className="hidden md:flex space-x-8">
+                            <a href="index.html" className="hover:text-purple-400 transition">Inicio</a>
+                            <a href="features.html" className="text-purple-400">Características</a>
+                            <a href="technology.html" className="hover:text-purple-400 transition">Tecnología</a>
+                            <a href="faq.html" className="hover:text-purple-400 transition">FAQ</a>
+                            <a href="about.html" className="hover:text-purple-400 transition">Sobre el Proyecto</a>
+                            <a href="index.html#download" className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition">
+                                Descargar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        );
+
+        // Features Detail Page
+        const FeaturesPage = () => {
+            const features = [
+                {
+                    icon: "🎓",
+                    title: "Gestión de Estudiantes",
+                    description: "Sistema completo para el registro y seguimiento de estudiantes.",
+                    details: [
+                        "Matrículas únicas con validación automática",
+                        "Estados académicos (Activo, Inactivo, Graduado, etc.)",
+                        "Información personal completa con fechas importantes",
+                        "Historial de cambios y actualizaciones",
+                        "Búsqueda y filtrado avanzado",
+                        "Exportación de listados en múltiples formatos"
+                    ]
+                },
+                {
+                    icon: "👥",
+                    title: "Gestión de Empleados",
+                    description: "Control total del personal con seguimiento de asistencia y nómina.",
+                    details: [
+                        "Registro completo con cédula y validación de identidad",
+                        "Tipos de contrato (Tiempo completo, Medio tiempo, Por horas, etc.)",
+                        "Control de estados laborales (Activo, Baja, Vacaciones, etc.)",
+                        "Sistema de registro de entrada y salida",
+                        "Cálculo automático de horas trabajadas",
+                        "Asignación a departamentos jerárquicos",
+                        "Gestión de salarios y fechas de contratación"
+                    ]
+                },
+                {
+                    icon: "📄",
+                    title: "Documentos Digitales",
+                    description: "Almacenamiento seguro y organizado de documentos digitales.",
+                    details: [
+                        "Soporte para PDFs e imágenes (PNG, JPG, JPEG)",
+                        "Sistema de archivos local sin dependencias cloud",
+                        "Organización por entidad (estudiantes, empleados, etc.)",
+                        "Metad automáticos de documentos",
+                        "Vista previa rápida de documentos",
+                        "Eliminación segura con confirmación",
+                        "Gestión de expedientes completos"
+                    ]
+                },
+                {
+                    icon: "🏢",
+                    title: "Departamentos",
+                    description: "Organización jerárquica de la estructura institucional.",
+                    details: [
+                        "Creación y gestión de departamentos",
+                        "Asignación de responsables",
+                        "Descripciones y notas informativas",
+                        "Relación con empleados y personal",
+                        "Estructura jerárquica flexible",
+                        "Reportes por departamento"
+                    ]
+                },
+                {
+                    icon: "👨‍👩‍👧",
+                    title: "Familiares y Tutores",
+                    description: "Gestión completa de información familiar y contactos.",
+                    details: [
+                        "Registro de familiares y tutores",
+                        "Relaciones de parentesco configurables",
+                        "Contactos de emergencia prioritarios",
+                        "Información de contacto múltiple",
+                        "Direcciones y ocupaciones",
+                        "Vinculación con estudiantes",
+                        "Historial de cambios"
+                    ]
+                },
+                {
+                    icon: "🖨️",
+                    title: "Reportes PDF",
+                    description: "Generación profesional de documentos y reportes.",
+                    details: [
+                        "Constancias de estudios personalizadas",
+                        "Formato institucional profesional",
+                        "Generación automática con datos actualizados",
+                        "Exportación a PDF de alta calidad",
+                        "Inclusión de logos y marcas de agua",
+                        "Fecha automática de emisión",
+                        "Selección de estudiante específico"
+                    ]
+                },
+                {
+                    icon: "🔒",
+                    title: "Seguridad y Privacidad",
+                    description: "Tus datos siempre seguros y privados en tu equipo.",
+                    details: [
+                        "100% local - datos nunca salen de tu computadora",
+                        "Base de datos SQLite encriptada",
+                        "Sin conexión a internet requerida",
+                        "Sin tracking ni telemetría",
+                        "Control total de tus datos",
+                        "Backup manual fácil de realizar",
+                        "Cumplimiento de privacidad de datos"
+                    ]
+                },
+                {
+                    icon: "⚡",
+                    title: "Rendimiento",
+                    description: "Optimizado para velocidad máxima y eficiencia.",
+                    details: [
+                        "Escrito en Rust para máximo rendimiento",
+                        "Interfaz gráfica instantánea con egui",
+                        "Base de datos SQLite optimizada",
+                        "Carga rápida de grandes volúmenes de datos",
+                        "Búsqueda instantánea en tiempo real",
+                        "Sin tiempos de carga de red",
+                        "Uso eficiente de recursos del sistema"
+                    ]
+                }
+            ];
+
+            return (
+                <div className="gradient-bg min-h-screen">
+                    <Navbar />
+                    <div className="pt-24 pb-16">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="text-center mb-16">
+                                <h1 className="text-5xl md:text-6xl font-bold mb-4">
+                                    Características <span className="gradient-text">Completas</span>
+                                </h1>
+                                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                                    Descubre todas las funcionalidades que hacen de SGI Pro la solución definitiva para la gestión institucional
+                                </p>
+                            </div>
+
+                            <div className="space-y-12">
+                                {features.map((feature, index) => (
+                                    <div key={index} className={`dark-card rounded-2xl p-8 card-hover scale-in stagger-${(index % 8) + 1}`}>
+                                        <div className="flex items-start space-x-6">
+                                            <div className="text-6xl float">{feature.icon}</div>
+                                            <div className="flex-1">
+                                                <h2 className="text-3xl font-bold mb-3">{feature.title}</h2>
+                                                <p className="text-gray-400 text-lg mb-6">{feature.description}</p>
+                                                <ul className="space-y-3">
+                                                    {feature.details.map((detail, i) => (
+                                                        <li key={i} className="flex items-start space-x-3 slide-in-left">
+                                                            <span className="text-purple-400 mt-1">✓</span>
+                                                            <span className="text-gray-300">{detail}</span>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-16 text-center">
+                                <a href="index.html#download" className="inline-block bg-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-700 transition text-lg">
+                                    📥 Descargar SGI Pro Gratis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer className="bg-gray-950 text-white py-12 border-t border-gray-800">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid md:grid-cols-4 gap-8 mb-8">
+                                <div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="text-3xl">🏫</span>
+                                        <span className="font-bold text-xl">SGI Pro</span>
+                                    </div>
+                                    <p className="text-gray-400">
+                                        Sistema de gestión institucional moderno, seguro y 100% local.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Producto</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="features.html" className="hover:text-white transition">Características</a></li>
+                                        <li><a href="technology.html" className="hover:text-white transition">Tecnología</a></li>
+                                        <li><a href="index.html#download" className="hover:text-white transition">Descargar</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Soporte</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="technology.html" className="hover:text-white transition">Documentación</a></li>
+                                        <li><a href="faq.html" className="hover:text-white transition">FAQ</a></li>
+                                        <li><a href="about.html" className="hover:text-white transition">Sobre el Proyecto</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Legal</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="#" className="hover:text-white transition">Privacidad</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Términos</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Licencia</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+                                <p>© 2024 SGI Pro. Proyecto Open Source Libre y Colaborativo</p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FeaturesPage />, document.getElementById('root'));
+    </script>
+</body>
+</html>

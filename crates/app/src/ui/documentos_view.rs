@@ -9,13 +9,13 @@ pub fn mostrar(ui: &mut egui::Ui, estado: &mut AppState) {
     ui.heading("Documentos (PDF / imágenes)");
     ui.add_space(8.0);
 
-    let Some(estudiante_id) = estado.estudiante_seleccionado else {
+    let Some(estudiante_id) = estado.estudiante_id_seleccionado else {
         ui.label("Selecciona un estudiante desde la vista 'Estudiantes' (botón 'Ver documentos') para gestionar sus archivos adjuntos.");
         return;
     };
 
     let nombre_estudiante = estado
-        .estudiantes
+        .lista_estudiantes
         .iter()
         .find(|e| e.id == estudiante_id)
         .map(|e| e.nombre_completo())
@@ -31,16 +31,16 @@ pub fn mostrar(ui: &mut egui::Ui, estado: &mut AppState) {
     ui.add_space(12.0);
     ui.separator();
 
-    let repo = SqliteDocumentoRepo::new(&estado.conn);
+    let repo = SqliteDocumentoRepo::new(&estado.conexion_bd);
     match repo.listar_por_entidad(&EntidadTipo::Estudiante, estudiante_id) {
-        Ok(documentos) => mostrar_lista_documentos(ui, &documentos),
+        Ok(documentos) => mostrar_lista_documentos(ui, estado, &documentos),
         Err(e) => {
             ui.colored_label(egui::Color32::RED, format!("Error cargando documentos: {e}"));
         }
     }
 }
 
-fn mostrar_lista_documentos(ui: &mut egui::Ui, documentos: &[Documento]) {
+fn mostrar_lista_documentos(ui: &mut egui::Ui, estado: &mut AppState, documentos: &[Documento]) {
     if documentos.is_empty() {
         ui.label("Sin documentos adjuntos todavía.");
         return;
@@ -68,7 +68,7 @@ fn mostrar_lista_documentos(ui: &mut egui::Ui, documentos: &[Documento]) {
                         abrir_documento(&doc.ruta_archivo);
                     }
                     if ui.button("🗑️").clicked() {
-                        // Eliminar documento
+                        eliminar_documento(estado, doc.id, &doc.ruta_archivo);
                     }
                 });
                 ui.end_row();
@@ -88,7 +88,7 @@ fn adjuntar_archivo(estado: &mut AppState, estudiante_id: uuid::Uuid) {
     let tamano_bytes = metadata.map(|m| m.len() as i64).unwrap_or(0);
     let mime_type = adivinar_mime(&ruta);
 
-    let repo = SqliteDocumentoRepo::new(&estado.conn);
+    let repo = SqliteDocumentoRepo::new(&estado.conexion_bd);
     let almacen = AlmacenLocal::new(directorio_documentos());
     let servicio = DocumentoService::new(&repo, &almacen);
 
@@ -101,7 +101,7 @@ fn adjuntar_archivo(estado: &mut AppState, estudiante_id: uuid::Uuid) {
         tamano_bytes,
     );
 
-    estado.mensaje_estado = Some(match resultado {
+    estado.establecer_mensaje(match resultado {
         Ok(_) => "Documento adjuntado correctamente.".to_string(),
         Err(e) => format!("Error al adjuntar documento: {e}"),
     });
@@ -148,6 +148,26 @@ fn abrir_documento(ruta: &str) {
                 .arg(ruta)
                 .spawn()
                 .ok();
+        }
+    }
+}
+
+fn eliminar_documento(estado: &mut AppState, doc_id: uuid::Uuid, ruta_archivo: &str) {
+    let repo = SqliteDocumentoRepo::new(&estado.conexion_bd);
+    let servicio = DocumentoService::new(&repo, &storage::repositories::AlmacenLocal::new(directorio_documentos()));
+
+    match servicio.eliminar(doc_id) {
+        Ok(_) => {
+            // Eliminar el archivo físico
+            let almacen = storage::repositories::AlmacenLocal::new(directorio_documentos());
+            if let Err(e) = almacen.eliminar_archivo(ruta_archivo) {
+                estado.establecer_mensaje(format!("Documento eliminado de BD pero error al eliminar archivo: {e}"));
+            } else {
+                estado.establecer_mensaje("Documento eliminado correctamente.".to_string());
+            }
+        }
+        Err(e) => {
+            estado.establecer_mensaje(format!("Error al eliminar documento: {e}"));
         }
     }
 }

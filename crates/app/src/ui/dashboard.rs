@@ -5,7 +5,7 @@ pub fn mostrar(ui: &mut egui::Ui, estado: &AppState) {
     ui.add_space(16.0);
 
     ui.horizontal(|ui| {
-        tarjeta_metrica(ui, "Estudiantes registrados", &estado.estudiantes.len().to_string());
+        tarjeta_metrica(ui, "Estudiantes registrados", &estado.lista_estudiantes.len().to_string());
         tarjeta_metrica(ui, "Activos", &contar_activos(estado).to_string());
     });
 
@@ -16,7 +16,7 @@ pub fn mostrar(ui: &mut egui::Ui, estado: &AppState) {
 fn contar_activos(estado: &AppState) -> usize {
     use app_core::models::estudiante::EstadoEstudiante;
     estado
-        .estudiantes
+        .lista_estudiantes
         .iter()
         .filter(|e| e.estado == EstadoEstudiante::Activo)
         .count()

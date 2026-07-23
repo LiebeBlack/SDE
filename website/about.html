@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre el Proyecto - Sistema de Gestión Institucional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: textGradient 3s ease infinite;
+        }
+        @keyframes textGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .card-hover:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+        }
+        .dark-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out;
+        }
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .scale-in {
+            animation: scaleIn 0.6s ease-out;
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .rotate-in {
+            animation: rotateIn 0.8s ease-out;
+        }
+        @keyframes rotateIn {
+            from { opacity: 0; transform: rotate(-10deg); }
+            to { opacity: 1; transform: rotate(0deg); }
+        }
+        .bounce-in {
+            animation: bounceIn 1s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        .stagger-6 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Navigation
+        const Navbar = () => (
+            <nav className="fixed w-full z-50 bg-gray-900/90 backdrop-blur-lg border-b border-gray-800">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-3xl">🏫</span>
+                            <span className="font-bold text-xl">SGI Pro</span>
+                        </div>
+                        <div className="hidden md:flex space-x-8">
+                            <a href="index.html" className="hover:text-purple-400 transition">Inicio</a>
+                            <a href="features.html" className="hover:text-purple-400 transition">Características</a>
+                            <a href="technology.html" className="hover:text-purple-400 transition">Tecnología</a>
+                            <a href="faq.html" className="hover:text-purple-400 transition">FAQ</a>
+                            <a href="about.html" className="text-purple-400">Sobre el Proyecto</a>
+                            <a href="index.html#download" className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition">
+                                Descargar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        );
+
+        // About Page
+        const AboutPage = () => {
+            const values = [
+                {
+                    icon: "🌟",
+                    title: "Open Source",
+                    description: "Código completamente abierto y transparente para la comunidad"
+                },
+                {
+                    icon: "🤝",
+                    title: "Colaborativo",
+                    description: "Desarrollo comunitario con contribuciones de todo el mundo"
+                },
+                {
+                    icon: "🔒",
+                    title: "Privacidad",
+                    description: "Respeto total a la privacidad de los datos del usuario"
+                },
+                {
+                    icon: "⚡",
+                    title: "Rendimiento",
+                    description: "Optimizado para velocidad máxima y eficiencia"
+                },
+                {
+                    icon: "🎯",
+                    title: "Simplicidad",
+                    description: "Fácil de usar sin configuraciones complejas"
+                },
+                {
+                    icon: "🌍",
+                    title: "Accesible",
+                    description: "Disponible para todos sin barreras económicas"
+                }
+            ];
+
+            const timeline = [
+                {
+                    year: "2024",
+                    title: "Inicio del Proyecto",
+                    description: "Concepción de SGI Pro como solución de gestión institucional local y open source"
+                },
+                {
+                    year: "2024",
+                    title: "Desarrollo Core",
+                    description: "Implementación de la arquitectura modular con Rust y SQLite"
+                },
+                {
+                    year: "2024",
+                    title: "Interfaz Gráfica",
+                    description: "Desarrollo de la interfaz moderna con egui"
+                },
+                {
+                    year: "2024",
+                    title: "Lanzamiento v1.0",
+                    description: "Primera versión estable con todas las funcionalidades principales"
+                }
+            ];
+
+            return (
+                <div className="gradient-bg min-h-screen">
+                    <Navbar />
+                    <div className="pt-24 pb-16">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            {/* Hero */}
+                            <div className="text-center mb-16">
+                                <h1 className="text-5xl md:text-6xl font-bold mb-4">
+                                    Sobre <span className="gradient-text">SGI Pro</span>
+                                </h1>
+                                <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                                    Un proyecto open source serio y profesional dedicado a proporcionar herramientas de gestión institucional 
+                                    modernas, seguras y accesibles para todos.
+                                </p>
+                            </div>
+
+                            {/* Mission */}
+                            <div className="dark-card rounded-2xl p-8 mb-16 card-hover">
+                                <div className="flex items-start space-x-6">
+                                    <div className="text-6xl">🎯</div>
+                                    <div>
+                                        <h2 className="text-3xl font-bold mb-4">Nuestra Misión</h2>
+                                        <p className="text-gray-300 text-lg leading-relaxed">
+                                            SGI Pro nace de la necesidad de proporcionar herramientas de gestión institucional de alta calidad 
+                                            que sean accesibles para todos, sin dependencias de servicios cloud, sin costos recurrentes y con 
+                                            control total sobre los datos. Creemos que la tecnología debe empoderar a las instituciones, 
+                                            no crear dependencias. Nuestro compromiso es con la privacidad, el rendimiento y la libertad del software.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Values */}
+                            <div className="mb-16">
+                                <h2 className="text-3xl font-bold mb-8 text-center">Nuestros Valores</h2>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {values.map((value, index) => (
+                                        <div key={index} className={`dark-card rounded-xl p-6 card-hover scale-in stagger-${(index % 6) + 1}`}>
+                                            <div className="text-4xl mb-4 float">{value.icon}</div>
+                                            <h3 className="text-xl font-bold mb-2">{value.title}</h3>
+                                            <p className="text-gray-400">{value.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Philosophy */}
+                            <div className="dark-card rounded-2xl p-8 mb-16 card-hover">
+                                <h2 className="text-3xl font-bold mb-6 text-center">Filosofía del Proyecto</h2>
+                                <div className="grid md:grid-cols-2 gap-8">
+                                    <div>
+                                        <h3 className="text-xl font-bold mb-4 text-purple-400">🚀 Modernidad</h3>
+                                        <p className="text-gray-300 mb-4">
+                                            Utilizamos tecnologías modernas como Rust para garantizar seguridad, rendimiento y 
+                                            mantenibilidad a largo plazo. No dependemos de tecnologías obsoletas o propietarias.
+                                        </p>
+                                        <h3 className="text-xl font-bold mb-4 text-purple-400">🔐 Seguridad</h3>
+                                        <p className="text-gray-300">
+                                            La seguridad es fundamental. Rust garantiza seguridad de memoria, y nuestra arquitectura 
+                                            local asegura que tus datos nunca salgan de tu control.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-bold mb-4 text-purple-400">🎨 Simplicidad</h3>
+                                        <p className="text-gray-300 mb-4">
+                                            Creemos en la simplicidad. Sin configuraciones complejas, sin dependencias externas, 
+                                            sin curvas de aprendizaje innecesarias. Solo descarga y usa.
+                                        </p>
+                                        <h3 className="text-xl font-bold mb-4 text-purple-400">🌐 Accesibilidad</h3>
+                                        <p className="text-gray-300">
+                                            El software debe ser accesible para todos, independientemente del presupuesto. 
+                                            Por eso SGI Pro es completamente gratuito y open source.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Timeline */}
+                            <div className="mb-16">
+                                <h2 className="text-3xl font-bold mb-8 text-center">Historia del Proyecto</h2>
+                                <div className="grid md:grid-cols-4 gap-4">
+                                    {timeline.map((item, index) => (
+                                        <div key={index} className={`dark-card rounded-xl p-6 card-hover text-center scale-in stagger-${(index % 4) + 1}`}>
+                                            <div className="text-3xl font-bold gradient-text mb-2">{item.year}</div>
+                                            <h3 className="font-bold mb-2">{item.title}</h3>
+                                            <p className="text-gray-400 text-sm">{item.description}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Open Source Section */}
+                            <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-2xl p-8 mb-16 border border-purple-700">
+                                <div className="text-center">
+                                    <h2 className="text-3xl font-bold mb-4">🌟 Proyecto Open Source</h2>
+                                    <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                                        SGI Pro es un proyecto 100% open source. Todo el código es público, transparente y disponible 
+                                        para la comunidad. Creemos en el poder del software libre y colaborativo.
+                                    </p>
+                                    <div className="grid md:grid-cols-3 gap-4 max-w-3xl mx-auto mb-6">
+                                        <div className="bg-gray-900/50 rounded-lg p-4">
+                                            <div className="text-2xl mb-2">📖</div>
+                                            <div className="font-semibold">Código Abierto</div>
+                                            <div className="text-gray-400 text-sm">Repositorio público completo</div>
+                                        </div>
+                                        <div className="bg-gray-900/50 rounded-lg p-4">
+                                            <div className="text-2xl mb-2">🤝</div>
+                                            <div className="font-semibold">Colaborativo</div>
+                                            <div className="text-gray-400 text-sm">Contribuciones bienvenidas</div>
+                                        </div>
+                                        <div className="bg-gray-900/50 rounded-lg p-4">
+                                            <div className="text-2xl mb-2">🔓</div>
+                                            <div className="font-semibold">100% Libre</div>
+                                            <div className="text-gray-400 text-sm">Sin licencias restrictivas</div>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-400 text-sm">
+                                        Licencia: MIT - Uso comercial, modificación, distribución y uso privado permitidos.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Call to Action */}
+                            <div className="text-center">
+                                <h2 className="text-3xl font-bold mb-6">Únete al Proyecto</h2>
+                                <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+                                    Puedes contribuir de muchas formas: reportando bugs, sugiriendo mejoras, 
+                                    escribiendo documentación, traduciendo la interfaz, o contribuyendo código.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                                    <a href="technology.html" className="bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 transition">
+                                        📖 Ver Código Fuente
+                                    </a>
+                                    <a href="faq.html" className="border border-purple-600 text-purple-400 px-6 py-3 rounded-full hover:bg-purple-600/10 transition">
+                                        ❓ Más Información
+                                    </a>
+                                </div>
+                                <a href="index.html#download" className="inline-block bg-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:bg-purple-700 transition text-lg">
+                                    📥 Descargar SGI Pro Gratis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer className="bg-gray-950 text-white py-12 border-t border-gray-800">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="grid md:grid-cols-4 gap-8 mb-8">
+                                <div>
+                                    <div className="flex items-center space-x-2 mb-4">
+                                        <span className="text-3xl">🏫</span>
+                                        <span className="font-bold text-xl">SGI Pro</span>
+                                    </div>
+                                    <p className="text-gray-400">
+                                        Sistema de gestión institucional moderno, seguro y 100% local.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Producto</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="features.html" className="hover:text-white transition">Características</a></li>
+                                        <li><a href="technology.html" className="hover:text-white transition">Tecnología</a></li>
+                                        <li><a href="index.html#download" className="hover:text-white transition">Descargar</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Soporte</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="technology.html" className="hover:text-white transition">Documentación</a></li>
+                                        <li><a href="faq.html" className="hover:text-white transition">FAQ</a></li>
+                                        <li><a href="about.html" className="hover:text-white transition">Sobre el Proyecto</a></li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold mb-4">Legal</h4>
+                                    <ul className="space-y-2 text-gray-400">
+                                        <li><a href="#" className="hover:text-white transition">Privacidad</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Términos</a></li>
+                                        <li><a href="#" className="hover:text-white transition">Licencia</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+                                <p>© 2024 SGI Pro. Proyecto Open Source Libre y Colaborativo</p>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<AboutPage />, document.getElementById('root'));
+    </script>
+</body>
+</html>

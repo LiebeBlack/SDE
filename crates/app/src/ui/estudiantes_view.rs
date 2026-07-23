@@ -21,6 +21,33 @@ pub fn mostrar(ui: &mut egui::Ui, estado: &mut AppState) {
         mostrar_formulario_nuevo(ui, estado);
     }
 
+    // Diálogo de confirmación de eliminación
+    if estado.mostrar_dialogo_confirmacion {
+        egui::Window::new("Confirmar eliminación")
+            .collapsible(false)
+            .resizable(false)
+            .show(ui.ctx(), |ui| {
+                ui.label(&estado.mensaje_confirmacion);
+                ui.add_space(16.0);
+                ui.horizontal(|ui| {
+                    if ui.button("Cancelar").clicked() {
+                        estado.cancelar_eliminacion();
+                    }
+                    if ui.button("Eliminar").clicked() {
+                        if let Some((tipo, id)) = estado.entidad_a_eliminar {
+                            match tipo {
+                                crate::state::TipoEntidad::Estudiante => {
+                                    eliminar_estudiante(estado, id);
+                                }
+                                _ => {}
+                            }
+                        }
+                        estado.cancelar_eliminacion();
+                    }
+                });
+            });
+    }
+
     ui.add_space(12.0);
     ui.separator();
 
@@ -89,23 +116,23 @@ fn mostrar_formulario_nuevo(ui: &mut egui::Ui, estado: &mut AppState) {
             ui.label("Nuevo estudiante");
             egui::Grid::new("form_nuevo_estudiante").num_columns(2).show(ui, |ui| {
                 ui.label("Matrícula");
-                ui.text_edit_singleline(&mut estado.form_nuevo_estudiante.matricula);
+                ui.text_edit_singleline(&mut estado.formulario_estudiante.campo_matricula);
                 ui.end_row();
 
                 ui.label("Nombre");
-                ui.text_edit_singleline(&mut estado.form_nuevo_estudiante.nombre);
+                ui.text_edit_singleline(&mut estado.formulario_estudiante.campo_nombre);
                 ui.end_row();
 
                 ui.label("Apellido");
-                ui.text_edit_singleline(&mut estado.form_nuevo_estudiante.apellido);
+                ui.text_edit_singleline(&mut estado.formulario_estudiante.campo_apellido);
                 ui.end_row();
 
                 ui.label("Grado/Nivel");
-                ui.text_edit_singleline(&mut estado.form_nuevo_estudiante.grado_nivel);
+                ui.text_edit_singleline(&mut estado.formulario_estudiante.campo_grado_nivel);
                 ui.end_row();
 
                 ui.label("Fecha nacimiento (AAAA-MM-DD)");
-                ui.text_edit_singleline(&mut estado.form_nuevo_estudiante.fecha_nacimiento);
+                ui.text_edit_singleline(&mut estado.formulario_estudiante.campo_fecha_nacimiento);
                 ui.end_row();
             });
 
